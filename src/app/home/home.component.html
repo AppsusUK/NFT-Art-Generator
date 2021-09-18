@@ -9,12 +9,12 @@
   <div [formGroup]="layerWeightsFormGroup" *ngIf="layerWeightsFormGroup" class="layer-weighting">
 
 
-    <div formArrayName="layerWeights" *ngIf="nftDirectory.layers" fxLayout='column' fxLayoutGap='6px'>
+    <div *ngIf="nftDirectory.layers" fxLayout='column' fxLayoutGap='6px'>
 
 
       <div  *ngFor="let layer of nftDirectory.layers|keyvalue; let i = index;" fxLayout='row' fxLayoutGap='12px'>
         <div>{{layer.key}}</div>
-        <input type="number" name="layer-weighting" [formControlName]="i" min="0" max="100">%
+        <input type="number" name="layer-weighting" [formControlName]="layer.key" min="0" max="100">%
       </div>
       
 

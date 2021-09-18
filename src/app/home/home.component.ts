@@ -13,8 +13,8 @@ export class HomeComponent implements OnInit {
   layerWeightsFormGroup: FormGroup;
   layerWeightsArray: FormArray = new FormArray([])
   nftDirectory: NftDirectory;
-  generationLimit: number;
-
+  generationLimit: number = 1;
+  itemRaries = [];
   constructor(private router: Router, private electron: ElectronService) { }
 
   ngOnInit(): void {
@@ -26,14 +26,25 @@ export class HomeComponent implements OnInit {
   loadNftFolder(): void {
     this.selectInputFolder();
     let layers = this.electron.fs.readdirSync(this.nftDirectory.path);
+
+
+    this.layerWeightsFormGroup = new FormGroup({
+      
+    })
+
     layers.forEach((layerName) => {
-      this.layerWeightsArray.push(new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]))
+      // this.layerWeightsArray.push(new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]))
+
+      this.layerWeightsFormGroup.addControl(layerName, new FormControl(100))
+
       this.nftDirectory.layers.set(layerName, {name: layerName, itemRarityFolders: new Map})
       //TODO Handle case of differing number of rarity folders/values
       let itemRarityFolders = this.electron.fs.readdirSync(this.nftDirectory.path + "/" + layerName, { withFileTypes: true })
       .filter(entry => entry.isDirectory())
       .map(entry => entry.name);
+      this.itemRaries = itemRarityFolders
 
+      // Reading and setting all folder/files names
       itemRarityFolders.forEach((itemRarityFolderName) => {
         this.nftDirectory
         .layers
@@ -61,16 +72,39 @@ export class HomeComponent implements OnInit {
 
     })
 
-    this.layerWeightsFormGroup = new FormGroup({
-      layerWeights: this.layerWeightsArray
+    let bigRarityArray = []
+ 
+    this.nftDirectory.layers.forEach(layer => {
+      bigRarityArray.push(Array.from(layer.itemRarityFolders.keys()))
     })
 
 
+    let set = new Set;
+    this.nftDirectory.layers.forEach((layer) => {
+      layer.itemRarityFolders.forEach((rarityFolder) => {
+        set.add(rarityFolder.name);
+      })
+    })
+
+    
+  
+
+    if( Array.from(set.values()).toString() === this.itemRaries.toString()){
+      console.log('all folders are the same')
+    } else {
+      console.log(this.itemRaries)
+      console.log('yourmum')
+    }
 
 
 
-    console.log(this.nftDirectory)
-    console.log(Math.random())
+    
+
+
+
+
+
+
   }
 
   selectInputFolder(): void {
@@ -89,13 +123,11 @@ export class HomeComponent implements OnInit {
 
     //2 set rarities
     //Fix index at reorganisation
-    this.nftDirectory.layers.forEach((layer, index) => {
-      console.log(index)
-      console.log(this.layerWeightsFormGroup.controls.layerWeights.value)
-      this.nftDirectory.layers.get(layer.name).rarity = this.layerWeightsFormGroup.controls.layerWeights.value[index]
+    this.nftDirectory.layers.forEach((layer:Layer, layerName: string) => {
+      this.nftDirectory.layers.get(layer.name).rarity = this.layerWeightsFormGroup.controls[layerName].value/100
     })
     console.log(this.nftDirectory)
-    //let selectNftItems = this.selectNftItems();
+    let selectNftItems = this.selectNftItems();
 
     //3 create and save nft images + metadata
   }
@@ -107,9 +139,9 @@ export class HomeComponent implements OnInit {
      */
      for(let i = 0; i < this.generationLimit; i++) {
       let selectedLayers = this.selectLayers();
-      let selectedNftFolderItems = this.selectNftFolderItems(selectedLayers);
+      // let selectedNftFolderItems = this.selectNftFolderItems(selectedLayers);
+      console.log(selectedLayers)
     }  
-    throw new Error('Method not implemented.');
   }
   
   selectNftFolderItems(selectedLayers: Layer[]) {
@@ -141,6 +173,12 @@ export class HomeComponent implements OnInit {
 
     return selectedLayers;
   }
+
+  findSimilar(...arrays) {   
+    return arrays.reduce((includ, current) =>
+      Array.from(new Set(includ.filter((a) => current.includes(a))))
+    );
+  };
 
 
 }
