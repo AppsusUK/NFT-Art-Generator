@@ -1,0 +1,29 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../out-tsc/app",
+    "module": "es2015",
+    "baseUrl": "",
+    "types": []
+  },
+  "files": [
+    "main.ts",
+    "polyfills.ts"
+  ],
+  "include": [
+    "**/*.d.ts"
+  ],
+  "exclude": [
+    "**/*.spec.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "fullTemplateTypeCheck": true,
+    "annotateForClosureCompiler": true,
+    "strictInjectionParameters": true,
+    "skipTemplateCodegen": false,
+    "preserveWhitespaces": true,
+    "skipMetadataEmit": false,
+    "disableTypeScriptVersionCheck": true
+  }
+}
