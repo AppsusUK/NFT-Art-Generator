@@ -1,26 +1,27 @@
 <div class="container">
-  <button (click)="loadNftFolder()">Load NFTS</button>
+  <button (click)="loadNftFolderStructure()">Load NFTS</button>
   <input type="number" name="generationLimit">
   <select name="blockchain">
     <option value="ethereum">Ethereum</option>
     <option value="solana">Solana</option>
   </select>
   
-  <div [formGroup]="layerWeightsFormGroup" *ngIf="layerWeightsFormGroup" class="layer-weighting">
-
-
+  <div [formGroup]="layerRarityFormGroup" *ngIf="layerRarityFormGroup" class="layer-weighting">
     <div *ngIf="nftDirectory.layers" fxLayout='column' fxLayoutGap='6px'>
-
-
-      <div  *ngFor="let layer of nftDirectory.layers|keyvalue; let i = index;" fxLayout='row' fxLayoutGap='12px'>
+      <div  *ngFor="let layer of nftDirectory.layers|keyvalue;" fxLayout='row' fxLayoutGap='12px'>
         <div>{{layer.key}}</div>
         <input type="number" name="layer-weighting" [formControlName]="layer.key" min="0" max="100">%
       </div>
-      
-
     </div>
-
-
   </div>
+  <div [formGroup]="itemRarityFolderRarityFormGroup" *ngIf="itemRarityFolderRarityFormGroup" class="layer-weighting">
+    <div *ngIf="commonItemRarityFolders" fxLayout='column' fxLayoutGap='6px'>
+      <div  *ngFor="let rarityFolder of commonItemRarityFolders;" fxLayout='row' fxLayoutGap='12px'>
+        <div>{{rarityFolder}}</div>
+        <input type="number" name="layer-weighting" [formControlName]="rarityFolder" min="0" max="100">%
+      </div>
+    </div>
+  </div>
+
   <button (click)="generateNfts()">Generate NFTS</button>
 </div>
