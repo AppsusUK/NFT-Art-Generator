@@ -1,15 +1,20 @@
 <div class="container">
   <button (click)="loadNftFolder()">Load NFTS</button>
+  <input type="number" name="generationLimit">
+  <select name="blockchain">
+    <option value="ethereum">Ethereum</option>
+    <option value="solana">Solana</option>
+  </select>
   
   <div [formGroup]="layerWeightsFormGroup" *ngIf="layerWeightsFormGroup" class="layer-weighting">
 
 
-    <div formArrayName="layerWeights" *ngIf="layers" fxLayout='column' fxLayoutGap='6px'>
+    <div formArrayName="layerWeights" *ngIf="nftDirectory.layers" fxLayout='column' fxLayoutGap='6px'>
 
 
-      <div  *ngFor="let layer of layers; let i = index;" fxLayout='row' fxLayoutGap='12px'>
-        <div>{{layer}}</div>
-        <input type="number" name="layer-weighting" [formControlName]="i" min="0" max="100">
+      <div  *ngFor="let layer of nftDirectory.layers|keyvalue; let i = index;" fxLayout='row' fxLayoutGap='12px'>
+        <div>{{layer.key}}</div>
+        <input type="number" name="layer-weighting" [formControlName]="i" min="0" max="100">%
       </div>
       
 
@@ -17,4 +22,5 @@
 
 
   </div>
+  <button (click)="generateNfts()">Generate NFTS</button>
 </div>
