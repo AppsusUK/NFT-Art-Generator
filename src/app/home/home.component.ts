@@ -129,13 +129,13 @@ export class HomeComponent implements OnInit {
       let selectedNftFolderItems = this.selectNftItems();
       console.log(selectedNftFolderItems)
       //3 create and save nft images + metadata
-      this.createNftImage(selectedNftFolderItems)
+      this.createNftImage(selectedNftFolderItems, i)
     }  
   }
 
 
 
-  async createNftImage(selectedNftFolderItems: NftItem[]) {
+  async createNftImage(selectedNftFolderItems: NftItem[], i) {
     /*let image = await loadImage(selectedNftFolderItems[0].path);
     const nftImage = createCanvas(image.width, image.height);
     let ctx = nftImage.getContext("2d");
@@ -147,13 +147,19 @@ export class HomeComponent implements OnInit {
     
     this.electron.fs.writeFileSync(`../${this.nftDirectory.path}`,nftImage.toBuffer())*/
     console.log(selectedNftFolderItems[0].path)
-    this.electron.fs.readFile(selectedNftFolderItems[0].path, async function(err, data) {
-      if (err) throw err;
-      const img = await loadImage(data);
-      const canvas = createCanvas(img.width, img.height);
+    const image = this.electron.fs.readFileSync(selectedNftFolderItems[0].path)
+      var blob = new Blob([image], {type: 'image/png'});
+      var url = URL.createObjectURL(blob);
+
+      const im2g = await loadImage(url);
+      const canvas = createCanvas(im2g.width, im2g.height);
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, img.width / 4, img.height / 4);
-    });
+      ctx.drawImage(im2g, 0, 0, im2g.width, im2g.height);
+      
+      window.open(canvas.toDataURL())
+
+      this.electron.fs.writeFileSync(`${i}.png`, canvas.toDataURL("image/png"))
+
   }
 
 
