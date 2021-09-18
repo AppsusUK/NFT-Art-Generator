@@ -36,4 +36,8 @@ export class ElectronService {
       this.remote = window.require('@electron/remote');
     }
   }
+
+  test() {
+    this.ipcRenderer.on
+  }
 }

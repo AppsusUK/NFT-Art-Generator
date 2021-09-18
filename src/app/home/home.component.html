@@ -1,7 +1,13 @@
 <div class="container">
-  <h1 class="title">
-    {{ 'PAGES.HOME.TITLE' | translate }}
-  </h1>
-
-  <a routerLink="/detail">{{ 'PAGES.HOME.GO_TO_DETAIL' | translate }}</a>
+  <button (click)="loadNftFolder()">Load NFTS</button>
+  
+  <div class="layer-weighting">
+    <div *ngIf="layers" fxLayout='column' fxLayoutGap='6px'>
+      <div *ngFor="let layer of layers" fxLayout='row' fxLayoutGap='12px'>
+        <div>{{layer}}</div>
+        <input type="number" name="layer-weighting">
+      </div>
+      <input type="text" [(ngModel)]="newVariable">
+    </div>
+  </div>
 </div>
