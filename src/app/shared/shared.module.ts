@@ -6,11 +6,21 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { PageNotFoundComponent } from './components/';
 import { WebviewDirective } from './directives/';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+
+const modules = [
+  CommonModule,
+  TranslateModule, 
+  FormsModule, 
+  FlexLayoutModule,
+  ReactiveFormsModule
+]
+
 
 @NgModule({
   declarations: [PageNotFoundComponent, WebviewDirective],
-  imports: [CommonModule, TranslateModule, FormsModule, FlexLayoutModule],
-  exports: [TranslateModule, WebviewDirective, FormsModule, FlexLayoutModule]
+  imports: [...modules],
+  exports: [...modules]
 })
 export class SharedModule {}

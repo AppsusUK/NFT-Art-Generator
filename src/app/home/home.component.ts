@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ElectronService } from '../core/services/electron/electron.service';
 
@@ -11,16 +12,27 @@ export class HomeComponent implements OnInit {
 
   inputFolder: string = null;
   layers: string[] = null;
+  layerWeightsFormGroup: FormGroup;
+  layerWeightsArray: FormArray = new FormArray([])
 
   constructor(private router: Router, private electron: ElectronService) { }
 
   ngOnInit(): void {
     console.log('HomeComponent INIT');
+
   }
 
   loadNftFolder(): void {
     this.selectInputFolder();
     this.layers = this.electron.fs.readdirSync(this.inputFolder);
+
+    this.layers.forEach(() => {
+      this.layerWeightsArray.push(new FormControl('', [Validators.required, Validators.min(0), Validators.max(100)]))
+    })
+
+    this.layerWeightsFormGroup = new FormGroup({
+      layerWeights: this.layerWeightsArray
+    })
   }
 
   selectInputFolder(): void {

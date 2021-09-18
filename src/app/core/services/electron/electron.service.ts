@@ -37,7 +37,4 @@ export class ElectronService {
     }
   }
 
-  test() {
-    this.ipcRenderer.on
-  }
 }
