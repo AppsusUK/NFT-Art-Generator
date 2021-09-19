@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ElectronService } from '../core/services/electron/electron.service';
 import * as _ from "lodash";
 import { createCanvas, loadImage } from 'canvas';
-import { fstat } from 'fs';
-import { ItemRarityFolder, Layer, NftDirectory, NftItem } from '../shared/models/NFTModels';
-import { KeyValue } from '@angular/common';
+import { EthNftMetaData, ItemRarityFolder, Layer, NftAttribute, NftDirectory, NftItem } from '../shared/models/NFTModels';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -19,17 +18,13 @@ export class HomeComponent implements OnInit {
 
   layerRarityFormGroup: FormGroup;
   itemRarityFolderRarityFormGroup: FormGroup;
+  generationLimitControl: FormControl = new FormControl(5, [Validators.min(1)])
   nftDirectory: NftDirectory;
-  generationLimit: number = 1000;
+  // generationLimit: number = 10;
   commonItemRarityFolders = [];
   numberOfTicks = 0;
   layers: string[] = [];
-  constructor(private router: Router, private electron: ElectronService, private ref: ChangeDetectorRef) { 
-    setInterval(() => {
-      this.numberOfTicks++;
-      // require view to be updated
-      this.ref.markForCheck();
-    }, 1000);
+  constructor(private router: Router, private electron: ElectronService, private titlecasePipe: TitleCasePipe) { 
   }
 
   ngOnInit(): void {
@@ -73,7 +68,8 @@ export class HomeComponent implements OnInit {
           .items
           .set(itemName, {
             name: itemName,
-            path: `${this.nftDirectory.path}/${layerName}/${itemRarityFolderName}/${itemName}`
+            path: `${this.nftDirectory.path}/${layerName}/${itemRarityFolderName}/${itemName}`,
+            layerName
            });
         })
       })
@@ -106,7 +102,7 @@ export class HomeComponent implements OnInit {
     this.commonItemRarityFolders.forEach(rarityFolder => {
       this.itemRarityFolderRarityFormGroup.addControl(rarityFolder, new FormControl(25))
     });
-    console.log(this.nftDirectory)
+    // console.log(this.nftDirectory)
   }
 
   selectInputFolder(): void {
@@ -137,10 +133,22 @@ export class HomeComponent implements OnInit {
     })
 
 
-    console.log(this.nftDirectory)
-    for(let i = 0; i < this.generationLimit; i++) {
+    if(!this.electron.fs.existsSync("output/")){
+      this.electron.fs.mkdirSync("output/")
+    }
+    if(!this.electron.fs.existsSync("output/images")){
+      this.electron.fs.mkdirSync("output/images")
+    }
+
+    if(!this.electron.fs.existsSync("output/metadata")){
+      this.electron.fs.mkdirSync("output/metadata")
+    }
+
+
+    // console.log(this.nftDirectory)
+    for(let i = 0; i < this.generationLimitControl.value; i++) {
       let selectedNftFolderItems = this.selectNftItems();
-      console.log(selectedNftFolderItems)
+      // console.log(selectedNftFolderItems)
       //3 create and save nft images + metadata
       this.createNftImage(selectedNftFolderItems, i)
     }  
@@ -149,26 +157,47 @@ export class HomeComponent implements OnInit {
 
 
   async createNftImage(selectedNftFolderItems: NftItem[], i) {
+    let attributes: NftAttribute[] = []
     const image = this.electron.fs.readFileSync(selectedNftFolderItems[0].path)
     var blob = new Blob([image], {type: 'image/png'});
     var url = URL.createObjectURL(blob);
-
+    
     const im2g = await loadImage(url);
     const canvas = createCanvas(im2g.width, im2g.height);
     const ctx = canvas.getContext('2d');
-
     for (let i=0; i<selectedNftFolderItems.length; i++) {
       const image = this.electron.fs.readFileSync(selectedNftFolderItems[i].path)
       var blob = new Blob([image], {type: 'image/png'});
       var url = URL.createObjectURL(blob);
       const currentImage = await loadImage(url);
-       ctx.drawImage(currentImage, 0, 0)
+      // console.log(`drawing image ${i} layer ${selectedNftFolderItems[i].name}`)
+      ctx.drawImage(currentImage, 0, 0)
+      attributes.push({
+        trait_type: this.titlecasePipe.transform(selectedNftFolderItems[i].layerName.split('_').join(' ')),
+        value: this.titlecasePipe.transform(selectedNftFolderItems[i].name.split('.')[0].split('_').join(' ')),
+      })
     }
 
     const img = canvas.toDataURL();
     const data = img.replace(/^data:image\/\w+;base64,/, "");
     const buf = Buffer.from(data, "base64");
-    this.electron.fs.writeFileSync(`output/${i}.png`, buf)
+    this.electron.fs.writeFileSync(`output/images/${i}.png`, buf)
+
+    const metadata: EthNftMetaData =  {
+      name: `${i}`,
+      description: `Image description ${i}`,
+      image: "",
+      attributes,
+      "hash": ""
+      }
+
+      this.createMetadataFile(metadata)
+
+  }
+
+
+  createMetadataFile(metadata: EthNftMetaData){
+    this.electron.fs.writeFileSync(`output/metadata/${metadata.name}.json`, JSON.stringify(metadata))
   }
 
 
@@ -186,11 +215,11 @@ export class HomeComponent implements OnInit {
   
   selectNftFolderItems(selectedLayers: Layer[]): any {
     let selectedItems = [];
-    console.log(selectedLayers)
+    // console.log(selectedLayers)
     selectedLayers.forEach(layer => {
       let raritySum = 0;
-      let roll = Math.random();
       for(let rarityFolder of Array.from(layer.itemRarityFolders.values())) {
+        let roll = Math.random();
         raritySum += rarityFolder.rarity;
         if(roll <= raritySum) {
           let randomItem = Array.from(rarityFolder.items.values())[Math.floor(Math.random()*rarityFolder.items.values.length)];
