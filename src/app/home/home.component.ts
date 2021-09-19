@@ -1,24 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ElectronService } from '../core/services/electron/electron.service';
 import * as _ from "lodash";
 import { createCanvas, loadImage } from 'canvas';
 import { fstat } from 'fs';
+import { ItemRarityFolder, Layer, NftDirectory, NftItem } from '../shared/models/NFTModels';
+import { KeyValue } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
 
   layerRarityFormGroup: FormGroup;
   itemRarityFolderRarityFormGroup: FormGroup;
   nftDirectory: NftDirectory;
-  generationLimit: number = 1;
+  generationLimit: number = 1000;
   commonItemRarityFolders = [];
-  constructor(private router: Router, private electron: ElectronService) { }
+  numberOfTicks = 0;
+  layers: string[] = [];
+  constructor(private router: Router, private electron: ElectronService, private ref: ChangeDetectorRef) { 
+    setInterval(() => {
+      this.numberOfTicks++;
+      // require view to be updated
+      this.ref.markForCheck();
+    }, 1000);
+  }
 
   ngOnInit(): void {
     console.log('HomeComponent INIT');
@@ -30,10 +42,11 @@ export class HomeComponent implements OnInit {
     this.selectInputFolder();
     let layers = this.electron.fs.readdirSync(this.nftDirectory.path);
     this.layerRarityFormGroup = new FormGroup({})
-    layers.forEach((layerName) => {
+    layers.forEach((layerName: string, index: number) => {
+      this.layers.push(layerName);
       this.layerRarityFormGroup.addControl(layerName, new FormControl(100))
 
-      this.nftDirectory.layers.set(layerName, {name: layerName, itemRarityFolders: new Map})
+      this.nftDirectory.layers.set(layerName, {name: layerName, itemRarityFolders: new Map, index: index})
       //TODO Handle case of differing number of rarity folders/values
       let itemRarityFolders = this.electron.fs.readdirSync(this.nftDirectory.path + "/" + layerName, { withFileTypes: true })
       .filter(entry => entry.isDirectory())
@@ -93,7 +106,7 @@ export class HomeComponent implements OnInit {
     this.commonItemRarityFolders.forEach(rarityFolder => {
       this.itemRarityFolderRarityFormGroup.addControl(rarityFolder, new FormControl(25))
     });
-      
+    console.log(this.nftDirectory)
   }
 
   selectInputFolder(): void {
@@ -136,30 +149,26 @@ export class HomeComponent implements OnInit {
 
 
   async createNftImage(selectedNftFolderItems: NftItem[], i) {
-    /*let image = await loadImage(selectedNftFolderItems[0].path);
-    const nftImage = createCanvas(image.width, image.height);
-    let ctx = nftImage.getContext("2d");
-
-    selectedNftFolderItems.forEach((nftFolderItem) => {
-      let currentImage = loadImage(nftFolderItem.path)
-      ctx.drawImage(currentImage)
-    })
-    
-    this.electron.fs.writeFileSync(`../${this.nftDirectory.path}`,nftImage.toBuffer())*/
-    console.log(selectedNftFolderItems[0].path)
     const image = this.electron.fs.readFileSync(selectedNftFolderItems[0].path)
+    var blob = new Blob([image], {type: 'image/png'});
+    var url = URL.createObjectURL(blob);
+
+    const im2g = await loadImage(url);
+    const canvas = createCanvas(im2g.width, im2g.height);
+    const ctx = canvas.getContext('2d');
+
+    for (let i=0; i<selectedNftFolderItems.length; i++) {
+      const image = this.electron.fs.readFileSync(selectedNftFolderItems[i].path)
       var blob = new Blob([image], {type: 'image/png'});
       var url = URL.createObjectURL(blob);
+      const currentImage = await loadImage(url);
+       ctx.drawImage(currentImage, 0, 0)
+    }
 
-      const im2g = await loadImage(url);
-      const canvas = createCanvas(im2g.width, im2g.height);
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(im2g, 0, 0, im2g.width, im2g.height);
-      
-      window.open(canvas.toDataURL())
-
-      this.electron.fs.writeFileSync(`${i}.png`, canvas.toDataURL("image/png"))
-
+    const img = canvas.toDataURL();
+    const data = img.replace(/^data:image\/\w+;base64,/, "");
+    const buf = Buffer.from(data, "base64");
+    this.electron.fs.writeFileSync(`output/${i}.png`, buf)
   }
 
 
@@ -177,6 +186,7 @@ export class HomeComponent implements OnInit {
   
   selectNftFolderItems(selectedLayers: Layer[]): any {
     let selectedItems = [];
+    console.log(selectedLayers)
     selectedLayers.forEach(layer => {
       let raritySum = 0;
       let roll = Math.random();
@@ -199,39 +209,24 @@ export class HomeComponent implements OnInit {
     let roll = Math.random();
     let selectedLayers = [];
 
-    this.nftDirectory.layers.forEach((layer) => {
-      if (roll <= layer.rarity || layer.rarity === 1){
-        selectedLayers.push(layer);
+    this.layers.forEach((layer) => {
+      if (roll <= this.nftDirectory.layers.get(layer).rarity || this.nftDirectory.layers.get(layer).rarity === 1){
+        selectedLayers.push(this.nftDirectory.layers.get(layer));
       }
     })
 
     return selectedLayers;
   }
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.layers, event.previousIndex, event.currentIndex);
+  }
+
+  valueByIndex = (a: Layer, b: Layer): number => {
+    return a.index < b.index ? -1 : a.index > b.index ? 1 : 0;
+  }
 }
 
-
-interface NftItem  {
-  name: string;
-  path: string;
-}
-
-interface ItemRarityFolder  {
-  name: string;
-  rarity?: number;
-  items?: Map<string, NftItem>;
-};
-
-interface Layer  {
-  name: string;
-  rarity?: number;
-  itemRarityFolders?: Map<string, ItemRarityFolder>
-};
-
-
-interface NftDirectory  {
-  path: string;
-  layers?: Map<string,Layer>;
-}
 /*
 1 - User will fill in input information
 2 - Press "Generate"

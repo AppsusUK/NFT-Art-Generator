@@ -7,13 +7,17 @@
   </select>
   
   <div [formGroup]="layerRarityFormGroup" *ngIf="layerRarityFormGroup" class="layer-weighting">
-    <div *ngIf="nftDirectory.layers" fxLayout='column' fxLayoutGap='6px'>
-      <div  *ngFor="let layer of nftDirectory.layers|keyvalue;" fxLayout='row' fxLayoutGap='12px'>
-        <div>{{layer.key}}</div>
-        <input type="number" name="layer-weighting" [formControlName]="layer.key" min="0" max="100">%
+    <div cdkDropList *ngIf="nftDirectory.layers" fxLayout='column' fxLayoutGap='6px' (cdkDropListDropped)="drop($event)">
+      <div *ngFor="let layer of layers" fxLayout='row' fxLayoutGap='12px' cdkDrag>
+        <div>{{layer}}</div>
+        <input type="number" name="layer-weighting" [formControlName]="layer" min="0" max="100">%
       </div>
     </div>
   </div>
+  
+
+
+
   <div [formGroup]="itemRarityFolderRarityFormGroup" *ngIf="itemRarityFolderRarityFormGroup" class="layer-weighting">
     <div *ngIf="commonItemRarityFolders" fxLayout='column' fxLayoutGap='6px'>
       <div  *ngFor="let rarityFolder of commonItemRarityFolders;" fxLayout='row' fxLayoutGap='12px'>
