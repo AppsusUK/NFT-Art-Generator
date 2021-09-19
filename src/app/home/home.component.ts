@@ -4,12 +4,20 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ElectronService } from '../core/services/electron/electron.service';
 import * as _ from "lodash";
-import { createCanvas, Image, loadImage } from 'canvas';
+import { Canvas, createCanvas, Image, loadImage } from 'canvas';
 import { EthNftMetaData, ItemRarityFolder, Layer, NftAttribute, NftDirectory, NftItem, SolNftMetaData } from '../shared/models/NFTModels';
 import { TitleCasePipe } from '@angular/common';
 import { MD5 } from 'crypto-es/lib/md5.js';
 import { SnackService } from '../core/services/snack/snack.service';
+import { create } from 'lodash';
 
+/*
+Spaghetti recipes from authentically Italian to quick and easy dinners.
+
+One of the most popular types of pasta, spaghetti is made from durum wheat and comes in medium-thin strands.
+It originated in Naples and is found all over the world, with each Italian region boasting its own signature spaghetti dish.
+Although artisanal brands may be made by hand using traditional methods, commercial varieties are produced using state-of-the-art pasta machines.
+*/
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -27,14 +35,13 @@ export class HomeComponent implements OnInit {
   currentNftImage = 1;
   layers: string[] = [];
   generating = false;
-  randomImage: string;
+  randomImageUrl: string;
   constructor(private router: Router, private electron: ElectronService, private titlecasePipe: TitleCasePipe, private snack: SnackService, private ref: ChangeDetectorRef) { 
   }
 
   ngOnInit(): void {
     console.log('HomeComponent INIT');
   }
-
 
   loadNftFolderStructure(): void {
     if(this.nftDirectory){
@@ -90,7 +97,7 @@ export class HomeComponent implements OnInit {
 
 
     //TODO extract to function + throw error
-    let bigRarityArray = []
+    let bigRarityArray: string[][] = []
     let uniqueFolderNamesSet = new Set;
   
     this.nftDirectory.layers.forEach((layer) => {
@@ -102,9 +109,7 @@ export class HomeComponent implements OnInit {
 
     this.commonItemRarityFolders = _.intersection(...bigRarityArray);
 
-    if( Array.from(uniqueFolderNamesSet.values()).toString() === this.commonItemRarityFolders.toString()){
-      console.log('all folders are the same')
-    } else {
+    if(Array.from(uniqueFolderNamesSet.values()).toString() !== this.commonItemRarityFolders.toString()){
       this.snack.generalSnack('Layer folder children are not the same, extra folders found. Make sure rarity folder names are the same.', 'Ok')
       throw Error("Rarity folder structure not uniform")
     }
@@ -116,29 +121,6 @@ export class HomeComponent implements OnInit {
 
     this.setNftFolderRarities();
     this.populateRandomImage();
-  }
-  
-  async populateRandomImage() {
-    const selectedNftItems = this.selectNftItems();
-
-    const image = this.electron.fs.readFileSync(selectedNftItems[0].path)
-    var blob = new Blob([image], {type: 'image/png'});
-    var url = URL.createObjectURL(blob);
-    
-    const im2g = await loadImage(url);
-    const canvas = createCanvas(im2g.width, im2g.height);
-    const ctx = canvas.getContext('2d');
-    
-    for (let i=0; i<selectedNftItems.length; i++) {
-      const image = this.electron.fs.readFileSync(selectedNftItems[i].path)
-      var blob = new Blob([image], {type: 'image/png'});
-      var url = URL.createObjectURL(blob);
-      const currentImage = await loadImage(url);
-      ctx.drawImage(currentImage, 0, 0)
-    }
-
-    this.randomImage = canvas.toDataURL();
-    this.ref.detectChanges();
   }
 
   selectInputFolder(): boolean {
@@ -153,17 +135,18 @@ export class HomeComponent implements OnInit {
       };
       return true
     }
-
     return false;
   }
 
-
+  stopGeneration() {
+    this.generating = false;
+  }
   
   async generateNfts() {
-    //Todo
-    //1 validation
+    if(!this.validateNftFolderRarities()){
+      return;
+    }
     this.setNftFolderRarities();
-
     this.setNFTImageOutputFolders();
 
     if(!await this.enterImageCreationLoop()) {
@@ -182,10 +165,11 @@ export class HomeComponent implements OnInit {
 
     this.setFormInteractability(false);
 
+    //TODO fix UI hang when main thread intensively in this loop - delegate to web worker
     this.currentNftImage = 1
     this.generating = true;
     let createdImageHashesSet = new Set<string>();
-    while(this.currentNftImage <= this.generationLimitControl.value) {
+    while(this.currentNftImage <= this.generationLimitControl.value && this.generating) {
       if(this.currentNftImage > this.generationLimitControl.value){
         this.snack.generalSnack('Completed image generation!', 'Ok')
         this.generating = false;
@@ -205,6 +189,8 @@ export class HomeComponent implements OnInit {
     return true;
   }
 
+  
+
   setFormInteractability(isInteractable: boolean) {
     if (isInteractable) {
       this.layerRarityFormGroup.enable()
@@ -214,8 +200,6 @@ export class HomeComponent implements OnInit {
       this.itemRarityFolderRarityFormGroup.disable()
     }
   }
-
-
 
   validateGenerationLimit(): boolean {
     if (this.generationLimitControl.value > this.getMaxImageCombinations()) {
@@ -239,6 +223,10 @@ export class HomeComponent implements OnInit {
   }
 
   getNFTImageItemsHash(selectedNftFolderItems: NftItem[]) {
+    if(selectedNftFolderItems.length === 0) {
+      return undefined;
+    }
+
     let orderedImageItemNames = selectedNftFolderItems.map((item) => item.path).toString();
     return MD5(orderedImageItemNames).toString();
   }
@@ -255,104 +243,124 @@ export class HomeComponent implements OnInit {
     return itemsInLayers.reduce((total, num) => total * num);
   }
 
-  setNftFolderRarities(): void {
+  validateNftFolderRarities(): boolean {
+    const rarityValues: number[] = Object.values(this.itemRarityFolderRarityFormGroup.value);
+    const raritySum = rarityValues.reduce((total: number, curr: number) => total + curr);
+
+    if(raritySum != 100) {
+      this.snack.generalSnack(`Sum of rarity folders does not equal 100%. Please adjust rarity folder values. Sum: ${raritySum}%`, 'Ok')
+      return false;
+    }
+    return true;
+  }
+
+  setNftFolderRarities(): boolean {
     this.nftDirectory.layers.forEach((layer:Layer, layerName: string) => {
       this.nftDirectory.layers.get(layer.name).rarity = this.layerRarityFormGroup.controls[layerName].value/100
       layer.itemRarityFolders.forEach((rarityFolder: ItemRarityFolder, rarityFolderName: string ) => {
         this.nftDirectory.layers.get(layer.name).itemRarityFolders.get(rarityFolderName).rarity = this.itemRarityFolderRarityFormGroup.controls[rarityFolderName].value/100
       });
     })
+    return true;
   }
 
 
-
-  async createNftImage(selectedNftFolderItems: NftItem[], i) {
-    const orderedImageItemNames = selectedNftFolderItems.map((item) => item.name).toString();
-    const nftImageHash = MD5(orderedImageItemNames).toString();
-    console.log(nftImageHash);
-
-
-    let attributes: NftAttribute[] = []
-    const image = this.electron.fs.readFileSync(selectedNftFolderItems[0].path)
+  async loadNFtItemsToCanvas(selectedNftItems: NftItem[]): Promise<Canvas> {
+    if (selectedNftItems.length === 0) {
+      const canvas = createCanvas(50, 50);
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(canvas,0,0)
+      return canvas;
+    }
+    const image = this.electron.fs.readFileSync(selectedNftItems[0].path)
     var blob = new Blob([image], {type: 'image/png'});
     var url = URL.createObjectURL(blob);
     
     const im2g = await loadImage(url);
     const canvas = createCanvas(im2g.width, im2g.height);
     const ctx = canvas.getContext('2d');
-    for (let i=0; i<selectedNftFolderItems.length; i++) {
-      const image = this.electron.fs.readFileSync(selectedNftFolderItems[i].path)
+    
+    for (let i=0; i<selectedNftItems.length; i++) {
+      const image = this.electron.fs.readFileSync(selectedNftItems[i].path)
       var blob = new Blob([image], {type: 'image/png'});
       var url = URL.createObjectURL(blob);
       const currentImage = await loadImage(url);
- 
       ctx.drawImage(currentImage, 0, 0)
-      attributes.push({
-        trait_type: this.titlecasePipe.transform(selectedNftFolderItems[i].layerName.split('_').join(' ')),
-        value: this.titlecasePipe.transform(selectedNftFolderItems[i].name.split('.')[0].split('_').join(' ')),
-      })
     }
 
+    return canvas;
+  }
+
+  async populateRandomImage() {
+    const canvas = await this.loadNFtItemsToCanvas(this.selectNftItems());
+
+    this.randomImageUrl = canvas.toDataURL();
+    this.ref.detectChanges();
+  }
+
+  async createNftImage(selectedNftFolderItems: NftItem[], fileName) {
+    const canvas = await this.loadNFtItemsToCanvas(selectedNftFolderItems);
+    this.writeImageToOutput(canvas, fileName);
+    this.createMetadataFile(selectedNftFolderItems, fileName)
+  }
+
+  writeImageToOutput(canvas: Canvas, fileName: string): void {
     const img = canvas.toDataURL();
+    //TODO - Consider toggling this off? May slow down the generation process if have to rerender UI every time
+    this.randomImageUrl = img;
     const data = img.replace(/^data:image\/\w+;base64,/, "");
     const buf = Buffer.from(data, "base64");
-    this.electron.fs.writeFileSync(`output/images/${i}.png`, buf)
+    this.electron.fs.writeFileSync(`output/images/${fileName}.png`, buf)
+  }
+
+  createMetadataFile(selectedNftFolderItems: NftItem[], fileName: string){
+    let attributes: NftAttribute[] = []
+    selectedNftFolderItems.forEach((item) => {
+      attributes.push({
+        trait_type: this.titlecasePipe.transform(item.layerName.split('_').join(' ')),
+        value: this.titlecasePipe.transform(item.name.split('.')[0].split('_').join(' ')),
+      })
+    });
 
     let metadata: EthNftMetaData | SolNftMetaData;
-
-
     switch(this.blockChain.value){
       case 'ethereum': {
         metadata =  {
-          name: `${i}`,
-          description: `Image description ${i}`,
+          name: `${fileName}`,
+          description: `Image description ${fileName}`,
           image: "",
           attributes,
-          hash: nftImageHash
+          hash: this.getNFTImageItemsHash(selectedNftFolderItems)
         }
         break;
       }
       case 'solana': {
         metadata =  {
-          name: `${i}`,
-          description: `Image description ${i}`,
+          name: `${fileName}`,
+          description: `Image description ${fileName}`,
           image: "",
           attributes,
           properties: {
-            hash: nftImageHash
+            hash: this.getNFTImageItemsHash(selectedNftFolderItems)
           }
         }
         break;
       }
     }
 
-    
-
-    this.createMetadataFile(metadata)
-     console.log(`Saved image ${i}.png`)
-  }
-
-
-  createMetadataFile(metadata: EthNftMetaData| SolNftMetaData){
     this.electron.fs.writeFileSync(`output/metadata/${metadata.name}.json`, JSON.stringify(metadata))
   }
 
 
 
 
-  selectNftItems() {
-     /*TODO Take into account:
-     1 - duplicates
-     2 - z-index's
-     3 - no image in folders
-     */
+  selectNftItems(): NftItem[] {
       let selectedLayers = this.selectLayers();
       return this.selectNftFolderItems(selectedLayers);
   }
   
-  selectNftFolderItems(selectedLayers: Layer[]): any {
+  selectNftFolderItems(selectedLayers: Layer[]): NftItem[] {
     let selectedItems = [];
-    // console.log(selectedLayers)
     selectedLayers.forEach(layer => {
       let raritySum = 0;
       for(let rarityFolder of Array.from(layer.itemRarityFolders.values())) {
@@ -371,7 +379,6 @@ export class HomeComponent implements OnInit {
   }
 
   selectLayers(): any {
-    //Rolls number between 0 and 1
     let roll = Math.random();
     let selectedLayers = [];
 
@@ -388,29 +395,3 @@ export class HomeComponent implements OnInit {
     moveItemInArray(this.layers, event.previousIndex, event.currentIndex);
   }
 }
-
-/*
-1 - User will fill in input information
-2 - Press "Generate"
-3 - Inputs sent to generation function
-
-
-/*
-Inputs to collect:
-- Input folder location
-- Selected blockchain:
-  -Solana
-  -Ethereum
-- Rarity of layers
-- Number of NFTS to generate
-
-Folder structure:
-Layers -> Rarity buckets -> items
-
-
-
-
-
-
-
-*/

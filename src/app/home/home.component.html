@@ -1,26 +1,11 @@
-
-
   <div style="padding: 64px 8vw" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="64px">
-
-
-
     <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="64px">
-
       <div class="raised" style="padding: 16px; background-color: rgb(211, 211, 211); ">
-
         <h3>Config</h3>
-
-    
-
-
-
           <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" style="">
-    
+
             <button mat-stroked-button (click)="loadNftFolderStructure()">Load NFTS</button>
-      
-      
-      
-      
+
             <div style="font-size: 12px;">
               <mat-form-field appearance="fill">
                 <mat-label>Number of NFTs to generate</mat-label>
@@ -40,33 +25,23 @@
                 <mat-hint align="end">Used for metadata generation</mat-hint>
               </mat-form-field>
             </div>
-
-      
-      
           </div>
-    
-        </div>
+      </div>
   
 
-        <div fxLayout="column" fxLayoutGap="12px">
+      <div fxLayout="column" fxLayoutGap="12px">
+        <button mat-raised-button color="primary" [disabled]="layers.length <= 0 || layerRarityFormGroup?.invalid || itemRarityFolderRarityFormGroup?.invalid || generating" (click)="generateNfts()">Generate NFTS</button>
+        <button mat-raised-button color="primary" [disabled]="!generating" (click)="stopGeneration()">Stop</button>
 
-
-          <button mat-raised-button color="primary" [disabled]="layers.length <= 0 || layerRarityFormGroup?.invalid || itemRarityFolderRarityFormGroup?.invalid" (click)="generateNfts()">Generate NFTS</button>
-
-
-          <mat-progress-bar
-          *ngIf="generating"
-          color="primary"
-          mode="determinate"
-          [value]="(currentNftImage/generationLimitControl.value)*100"
-      >
-          </mat-progress-bar>
-      
-          <span *ngIf="generating" >current: {{currentNftImage}} our of {{generationLimitControl.value}}</span>
-
-        </div>
-
-
+        <mat-progress-bar
+        *ngIf="generating"
+        color="primary"
+        mode="determinate"
+        [value]="(currentNftImage/generationLimitControl.value)*100">
+        </mat-progress-bar>
+    
+        <span *ngIf="generating" >Current: {{currentNftImage}} out of {{generationLimitControl.value}}</span>
+      </div>
     </div>
 
 
@@ -95,7 +70,7 @@
               <div style="font-size: 12px;">
                 <mat-form-field appearance="fill" >
                   <mat-label>{{layer}}</mat-label>
-                  <input matInput placeholder="5" type="number"  [formControlName]="layer"  required min="0" max="100">
+                  <input matInput placeholder="5" type="number"  [formControlName]="layer"  required min="0" max="100" (change)="setNftFolderRarities()">
   
                 </mat-form-field>
               </div>
@@ -124,26 +99,18 @@
             <div style="font-size: 12px;">
               <mat-form-field appearance="fill" >
                 <mat-label>{{rarityFolder}}</mat-label>
-                <input matInput placeholder="5" type="number" [formControlName]="rarityFolder"  required min="0" max="100">
+                <input matInput placeholder="5" type="number" [formControlName]="rarityFolder"  required min="0" max="100" (change)="setNftFolderRarities()">
   
               </mat-form-field>
             </div>
 
           </div>
-
-
-
-
-
-
         </div>
-
-
       </div>
 
       <div fxLayout="column" fxLayoutGap="32px" *ngIf="layerRarityFormGroup && itemRarityFolderRarityFormGroup">
-        <img [src]="randomImage" style="background-color: white; height: 500px; width: 500px; border-radius: 15px;">
-        <button (click)="populateRandomImage()">Random</button>
+        <img [src]="randomImageUrl" style="background-color: white; height: 500px; width: 500px; border-radius: 15px;">
+        <button mat-raised-button (click)="populateRandomImage()">Random</button>
       </div>
     </div>
   </div>
