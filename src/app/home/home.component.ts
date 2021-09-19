@@ -5,9 +5,10 @@ import { Router } from '@angular/router';
 import { ElectronService } from '../core/services/electron/electron.service';
 import * as _ from "lodash";
 import { createCanvas, loadImage } from 'canvas';
-import { EthNftMetaData, ItemRarityFolder, Layer, NftAttribute, NftDirectory, NftItem } from '../shared/models/NFTModels';
+import { EthNftMetaData, ItemRarityFolder, Layer, NftAttribute, NftDirectory, NftItem, SolNftMetaData } from '../shared/models/NFTModels';
 import { TitleCasePipe } from '@angular/common';
 import { MD5 } from 'crypto-es/lib/md5.js';
+import { SnackService } from '../core/services/snack/snack.service';
 
 @Component({
   selector: 'app-home',
@@ -20,21 +21,25 @@ export class HomeComponent implements OnInit {
   layerRarityFormGroup: FormGroup;
   itemRarityFolderRarityFormGroup: FormGroup;
   generationLimitControl: FormControl = new FormControl(5, [Validators.min(1)])
+  blockChain: FormControl = new FormControl('ethereum', [Validators.required])
   nftDirectory: NftDirectory;
-  // generationLimit: number = 10;
   commonItemRarityFolders = [];
-  numberOfTicks = 0;
+  currentNftImage = 1;
   layers: string[] = [];
-  constructor(private router: Router, private electron: ElectronService, private titlecasePipe: TitleCasePipe) { 
+  generating = false;
+  constructor(private router: Router, private electron: ElectronService, private titlecasePipe: TitleCasePipe, private snack: SnackService, private ref: ChangeDetectorRef) { 
   }
 
   ngOnInit(): void {
     console.log('HomeComponent INIT');
-
   }
 
 
   loadNftFolderStructure(): void {
+    if(this.nftDirectory){
+      this.nftDirectory = null
+      this.layers = []
+    }
     this.selectInputFolder();
     let layers = this.electron.fs.readdirSync(this.nftDirectory.path);
     this.layerRarityFormGroup = new FormGroup({})
@@ -96,7 +101,7 @@ export class HomeComponent implements OnInit {
     } else {
       console.log(Array.from(uniqueFolderNamesSet.values()))
       console.log(this.commonItemRarityFolders)
-      console.log('yourmum')
+      console.log('different folders found')
     }
 
     this.itemRarityFolderRarityFormGroup = new FormGroup({});
@@ -120,7 +125,7 @@ export class HomeComponent implements OnInit {
 
 
   
-  generateNfts() {
+  async generateNfts() {
     //Todo
     //1 validation
 
@@ -145,14 +150,43 @@ export class HomeComponent implements OnInit {
       this.electron.fs.mkdirSync("output/metadata")
     }
 
+    this.currentNftImage = 1
+    let dupes = 0;
+    let createdImageHashes = []
+    this.generating = true;
 
-    // console.log(this.nftDirectory)
-    for(let i = 0; i < this.generationLimitControl.value; i++) {
+    this.layerRarityFormGroup.disable()
+    this.itemRarityFolderRarityFormGroup.disable()
+    while(this.currentNftImage <= this.generationLimitControl.value){
+      if(this.currentNftImage > this.generationLimitControl.value){
+        this.snack.generalSnack('Generated image limit', 'Ok')
+        this.generating = false;
+        break;
+      }
       let selectedNftFolderItems = this.selectNftItems();
-      // console.log(selectedNftFolderItems)
-      //3 create and save nft images + metadata
-      this.createNftImage(selectedNftFolderItems, i)
-    }  
+      let orderedImageItemNames = selectedNftFolderItems.map((item) => item.path).toString();
+      let nftImageHash = MD5(orderedImageItemNames).toString();
+      const foundHash = createdImageHashes.find(e => e === nftImageHash)
+      if(foundHash === undefined){
+        await this.createNftImage(selectedNftFolderItems, this.currentNftImage);
+        createdImageHashes.push(nftImageHash)
+        this.currentNftImage++
+        this.ref.detectChanges();
+      } else {
+        console.log('found already')
+        if(dupes > 30000){
+          this.snack.generalSnack('Too many duplicates stopping run', 'Ok')
+          this.generating = false;
+          break;
+        }
+        dupes++
+      }
+    }
+
+    this.snack.generalSnack(`Completed generating ${this.currentNftImage-1} images`, 'Ok')
+    this.generating = false;
+    this.layerRarityFormGroup.enable()
+    this.itemRarityFolderRarityFormGroup.enable()
   }
 
 
@@ -176,7 +210,7 @@ export class HomeComponent implements OnInit {
       var blob = new Blob([image], {type: 'image/png'});
       var url = URL.createObjectURL(blob);
       const currentImage = await loadImage(url);
-      // console.log(`drawing image ${i} layer ${selectedNftFolderItems[i].name}`)
+ 
       ctx.drawImage(currentImage, 0, 0)
       attributes.push({
         trait_type: this.titlecasePipe.transform(selectedNftFolderItems[i].layerName.split('_').join(' ')),
@@ -189,21 +223,42 @@ export class HomeComponent implements OnInit {
     const buf = Buffer.from(data, "base64");
     this.electron.fs.writeFileSync(`output/images/${i}.png`, buf)
 
+    let metadata: EthNftMetaData | SolNftMetaData;
 
-    const metadata: EthNftMetaData =  {
-      name: `${i}`,
-      description: `Image description ${i}`,
-      image: "",
-      attributes,
-      hash: ""
+
+    switch(this.blockChain.value){
+      case 'ethereum': {
+        metadata =  {
+          name: `${i}`,
+          description: `Image description ${i}`,
+          image: "",
+          attributes,
+          hash: nftImageHash
+        }
+        break;
+      }
+      case 'solana': {
+        metadata =  {
+          name: `${i}`,
+          description: `Image description ${i}`,
+          image: "",
+          attributes,
+          properties: {
+            hash: nftImageHash
+          }
+        }
+        break;
+      }
     }
 
-    this.createMetadataFile(metadata)
+    
 
+    this.createMetadataFile(metadata)
+     console.log(`Saved image ${i}.png`)
   }
 
 
-  createMetadataFile(metadata: EthNftMetaData){
+  createMetadataFile(metadata: EthNftMetaData| SolNftMetaData){
     this.electron.fs.writeFileSync(`output/metadata/${metadata.name}.json`, JSON.stringify(metadata))
   }
 

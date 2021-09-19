@@ -33,6 +33,16 @@ export interface EthNftMetaData {
   hash: string;
 }
 
+export interface SolNftMetaData {
+  name: string;
+  description: string;
+  image: string;
+  attributes: NftAttribute[],
+  properties: {
+    hash: string;
+  }
+}
+
 export interface NftAttribute {
   trait_type: string;
   value: string | number;

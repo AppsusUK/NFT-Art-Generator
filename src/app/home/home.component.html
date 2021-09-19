@@ -1,54 +1,150 @@
-<div class="container" >
 
-  <div style="padding: 64px 8vw" fxLayout="column" fxLayoutGap="64px">
 
-    <div fxLayout="row" fxLayoutGap="16px">
-
-      <button (click)="loadNftFolderStructure()">Load NFTS</button>
+  <div style="padding: 64px 8vw" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="64px">
 
 
 
-        <mat-form-field appearance="fill">
-          <mat-label>Number of NFTs to generate</mat-label>
-          <input matInput placeholder="5" type="number" [formControl]="generationLimitControl" required>
-          <mat-error *ngIf="generationLimitControl.invalid">Enter valid number</mat-error>
-        </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="64px">
 
+      <div class="raised" style="padding: 16px; background-color: rgb(211, 211, 211); ">
 
+        <h3>Config</h3>
 
-
-      <select name="blockchain">
-        <option value="ethereum">Ethereum</option>
-        <option value="solana">Solana</option>
-      </select>
-
-    </div>
     
-    <div [formGroup]="layerRarityFormGroup" *ngIf="layerRarityFormGroup" class="layer-weighting">
-      <div cdkDropList class="example-list" *ngIf="nftDirectory.layers" fxLayout='column' fxLayoutGap='6px' (cdkDropListDropped)="drop($event)">
-        <div *ngFor="let layer of layers" fxLayout='row' fxLayoutGap='12px' cdkDrag class="example-box">
-          <div>{{layer}}</div>
-          <input type="number" name="layer-weighting" [formControlName]="layer" min="0" max="100">%
+
+
+
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" style="">
+    
+            <button mat-stroked-button (click)="loadNftFolderStructure()">Load NFTS</button>
+      
+      
+      
+      
+            <div style="font-size: 12px;">
+              <mat-form-field appearance="fill">
+                <mat-label>Number of NFTs to generate</mat-label>
+                <input matInput placeholder="5" type="number" [formControl]="generationLimitControl" required>
+                <mat-error *ngIf="generationLimitControl.invalid">Enter valid number</mat-error>
+              </mat-form-field>
+            </div>
+      
+      
+            <div style="font-size: 12px;">
+              <mat-form-field appearance="fill">
+                <mat-label>Blockchain</mat-label>
+                <mat-select [formControl]="blockChain">
+                  <mat-option value="ethereum">Ethereum</mat-option>
+                  <mat-option value="solana">Solana</mat-option>
+                </mat-select>
+                <mat-hint align="end">Used for metadata generation</mat-hint>
+              </mat-form-field>
+            </div>
+
+      
+      
+          </div>
+    
         </div>
-      </div>
+  
+      <button mat-raised-button color="primary" [disabled]="layers.length <= 0 || layerRarityFormGroup?.invalid || itemRarityFolderRarityFormGroup?.invalid" (click)="generateNfts()">Generate NFTS</button>
+
     </div>
+
+    <mat-progress-bar
+    *ngIf="generating"
+    color="primary"
+    mode="determinate"
+    [value]="(currentNftImage/generationLimitControl.value)*100"
+>
+    </mat-progress-bar>
+
+    <span *ngIf="generating" >current: {{currentNftImage}} our of {{generationLimitControl.value}}</span>
+
+    
+    
+
+    <div fxLayout="row flex" fxLayoutAlign="start start" fxLayoutGap="64px">
+
+
+
+
+
+
+        <div [formGroup]="layerRarityFormGroup" *ngIf="layerRarityFormGroup" class="layer-weighting">
+
+          <h3 style="margin-top: 0px;">Layer order</h3>
+
+          <div cdkDropList class="example-list" *ngIf="nftDirectory.layers" fxLayout='column' fxLayoutGap='6px' (cdkDropListDropped)="drop($event)">
+            <div *ngFor="let layer of layers;let i = index;" fxLayout='row' fxLayoutGap='12px' cdkDrag class="example-box" [cdkDragDisabled]="generating">
+    
+    
+              <span>{{i}}</span>
     
   
+              <div style="font-size: 12px;">
+                <mat-form-field appearance="fill" >
+                  <mat-label>{{layer}}</mat-label>
+                  <input matInput placeholder="5" type="number"  [formControlName]="layer"  required min="0" max="100">
   
+                </mat-form-field>
+              </div>
+    
   
-    <div [formGroup]="itemRarityFolderRarityFormGroup" *ngIf="itemRarityFolderRarityFormGroup" class="layer-weighting">
-      <div *ngIf="commonItemRarityFolders" fxLayout='column' fxLayoutGap='6px'>
-        <div  *ngFor="let rarityFolder of commonItemRarityFolders;" fxLayout='row' fxLayoutGap='12px'>
-          <div>{{rarityFolder}}</div>
-          <input type="number" name="layer-weighting" [formControlName]="rarityFolder" min="0" max="100">%
+            </div>
+          </div>
         </div>
+
+ 
+      
+    
+    
+    
+      <div [formGroup]="itemRarityFolderRarityFormGroup" *ngIf="itemRarityFolderRarityFormGroup" class="layer-weighting">
+
+
+        <h3 style="margin-top: 0;">Rarity Probability</h3>
+
+        <div *ngIf="commonItemRarityFolders" fxLayout='column' fxLayoutGap='24px' class="example-list" style="width: 212px;">
+
+          <div  *ngFor="let rarityFolder of commonItemRarityFolders;" fxLayout='row' fxLayoutGap='12px' class="example-box" style="cursor: default;">
+            <!-- <div>{{rarityFolder}}</div>
+            <input type="number" name="layer-weighting" [formControlName]="rarityFolder" min="0" max="100">% -->
+
+            <div style="font-size: 12px;">
+              <mat-form-field appearance="fill" >
+                <mat-label>{{rarityFolder}}</mat-label>
+                <input matInput placeholder="5" type="number" [formControlName]="rarityFolder"  required min="0" max="100">
+  
+              </mat-form-field>
+            </div>
+
+          </div>
+
+
+
+
+
+
+        </div>
+
+
       </div>
+
+      <div fxLayout="column" *ngIf="layerRarityFormGroup && itemRarityFolderRarityFormGroup">
+        <div  style="background-color: white; height: 500px; width: 500px; border-radius: 15px;"></div>
+        <button>Random</button>
+        
+      </div>
+
+ 
+
+ 
+
     </div>
   
-    <button (click)="generateNfts()">Generate NFTS</button>
+
 
 
 
   </div>
-
-</div>
