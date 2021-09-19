@@ -7,6 +7,7 @@ import * as _ from "lodash";
 import { createCanvas, loadImage } from 'canvas';
 import { EthNftMetaData, ItemRarityFolder, Layer, NftAttribute, NftDirectory, NftItem } from '../shared/models/NFTModels';
 import { TitleCasePipe } from '@angular/common';
+import { MD5 } from 'crypto-es/lib/md5.js';
 
 @Component({
   selector: 'app-home',
@@ -157,6 +158,11 @@ export class HomeComponent implements OnInit {
 
 
   async createNftImage(selectedNftFolderItems: NftItem[], i) {
+    let orderedImageItemNames = selectedNftFolderItems.map((item) => item.name).toString();
+    let nftImageHash = MD5(orderedImageItemNames).toString();
+    console.log(nftImageHash);
+
+
     let attributes: NftAttribute[] = []
     const image = this.electron.fs.readFileSync(selectedNftFolderItems[0].path)
     var blob = new Blob([image], {type: 'image/png'});
@@ -183,15 +189,16 @@ export class HomeComponent implements OnInit {
     const buf = Buffer.from(data, "base64");
     this.electron.fs.writeFileSync(`output/images/${i}.png`, buf)
 
+
     const metadata: EthNftMetaData =  {
       name: `${i}`,
       description: `Image description ${i}`,
       image: "",
       attributes,
-      "hash": ""
-      }
+      hash: ""
+    }
 
-      this.createMetadataFile(metadata)
+    this.createMetadataFile(metadata)
 
   }
 
@@ -249,10 +256,6 @@ export class HomeComponent implements OnInit {
 
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.layers, event.previousIndex, event.currentIndex);
-  }
-
-  valueByIndex = (a: Layer, b: Layer): number => {
-    return a.index < b.index ? -1 : a.index > b.index ? 1 : 0;
   }
 }
 

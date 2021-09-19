@@ -47,6 +47,7 @@
     "@electron/remote": "1.2.0",
     "@types/lodash": "4.14.173",
     "canvas": "2.8.0",
+    "crypto-es": "1.2.7",
     "lodash": "4.17.21",
     "rxjs": "~6.6.0",
     "tslib": "^2.1.0",
