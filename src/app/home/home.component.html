@@ -75,7 +75,7 @@
 
           <h3 style="margin-top: 0px;">Layer order</h3>
 
-          <div cdkDropList class="example-list" *ngIf="nftDirectory.layers" fxLayout='column' fxLayoutGap='6px' (cdkDropListDropped)="drop($event)">
+          <div cdkDropList class="example-list" *ngIf="nftDirectory?.layers" fxLayout='column' fxLayoutGap='6px' (cdkDropListDropped)="drop($event)">
             <div *ngFor="let layer of layers;let i = index;" fxLayout='row' fxLayoutGap='12px' cdkDrag class="example-box" [cdkDragDisabled]="generating">
     
     
@@ -132,19 +132,9 @@
       </div>
 
       <div fxLayout="column" *ngIf="layerRarityFormGroup && itemRarityFolderRarityFormGroup">
-        <div  style="background-color: white; height: 500px; width: 500px; border-radius: 15px;"></div>
-        <button>Random</button>
+        <img [src]="randomImage" style="background-color: white; height: 500px; width: 500px; border-radius: 15px;">
+        <button (click)="populateRandomImage()">Random</button>
         
       </div>
-
- 
-
- 
-
     </div>
-  
-
-
-
-
   </div>
