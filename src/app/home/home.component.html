@@ -47,19 +47,29 @@
     
         </div>
   
-      <button mat-raised-button color="primary" [disabled]="layers.length <= 0 || layerRarityFormGroup?.invalid || itemRarityFolderRarityFormGroup?.invalid" (click)="generateNfts()">Generate NFTS</button>
+
+        <div fxLayout="column" fxLayoutGap="12px">
+
+
+          <button mat-raised-button color="primary" [disabled]="layers.length <= 0 || layerRarityFormGroup?.invalid || itemRarityFolderRarityFormGroup?.invalid" (click)="generateNfts()">Generate NFTS</button>
+
+
+          <mat-progress-bar
+          *ngIf="generating"
+          color="primary"
+          mode="determinate"
+          [value]="(currentNftImage/generationLimitControl.value)*100"
+      >
+          </mat-progress-bar>
+      
+          <span *ngIf="generating" >current: {{currentNftImage}} our of {{generationLimitControl.value}}</span>
+
+        </div>
+
 
     </div>
 
-    <mat-progress-bar
-    *ngIf="generating"
-    color="primary"
-    mode="determinate"
-    [value]="(currentNftImage/generationLimitControl.value)*100"
->
-    </mat-progress-bar>
 
-    <span *ngIf="generating" >current: {{currentNftImage}} our of {{generationLimitControl.value}}</span>
 
     
     
@@ -131,10 +141,9 @@
 
       </div>
 
-      <div fxLayout="column" *ngIf="layerRarityFormGroup && itemRarityFolderRarityFormGroup">
+      <div fxLayout="column" fxLayoutGap="32px" *ngIf="layerRarityFormGroup && itemRarityFolderRarityFormGroup">
         <img [src]="randomImage" style="background-color: white; height: 500px; width: 500px; border-radius: 15px;">
         <button (click)="populateRandomImage()">Random</button>
-        
       </div>
     </div>
   </div>
