@@ -8,9 +8,9 @@ Appsus NFT Art Generator is a free, open source application used to generate NFT
 
 ## Usage Quick Start
 
-1. Run the Nft Art Generator executable in a folder in which it can create an output folder
+1. Run the Nft Art Generator executable
 2. Click the "Load Input Folder" Button
-3. Select the folder which contains your NFT image layer folders
+3. Select the folder which contains your NFT image layer folders (Output images are saved in a folder at the same level e.g. if input folder is in Desktop, the output folder will also be placed there)
 4. Adjust the layer ordering by dragging the layers to position
 5. Adjust the individual layer percentage probabilities
 6. Adjust the rarity folder percentage probabilities - **must add up to 100**
