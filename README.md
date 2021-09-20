@@ -4,6 +4,8 @@
 
 Appsus NFT Art Generator is a free, open source application used to generate NFT art collections from an input of base image layers. Complete with configurable layer rarity and metadata generation. Ready to upload and mint to the Ethereum or Solana blockchains!
 
+![app-image-generation](https://raw.githubusercontent.com/AppsusUK/NFT-Art-Generator/main/8VqYaeh6JZ.gif)
+
 ## Usage Quick Start
 
 1. Run the Nft Art Generator executable in a folder in which it can create an output folder
