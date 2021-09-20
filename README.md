@@ -17,7 +17,7 @@ Appsus NFT Art Generator is a free, open source application used to generate NFT
 7. Test that image creation is as expected by clicking the "Random" button
 8. Set the number of Nfts to generate
 9. Select the blockchain to generate metadata for
-10. **Optional** - Set "Art Base Name" NFT Image (both art + metadata) prefix
+10. **Optional** - Set "Art Base Name" NFT Image prefix (This only sets the image metadata name)
 11. Click Generate
 12. ???
 13. Profit
