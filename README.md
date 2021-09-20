@@ -101,7 +101,7 @@ Individual words in an items name must be separated by an underscore in order fo
 ###  Image Dimensions
 Images need to have the same width and height, so that the position of the image item is correct relative to the other layered image items.
 
-##FAQ's
+##  FAQ's
 Ask away
 
 
