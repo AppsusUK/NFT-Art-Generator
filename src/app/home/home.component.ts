@@ -4,12 +4,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ElectronService } from '../core/services/electron/electron.service';
 import * as _ from "lodash";
-import { Canvas, createCanvas, Image, loadImage } from 'canvas';
+import { Canvas, createCanvas, loadImage } from 'canvas';
 import { EthNftMetaData, ItemRarityFolder, Layer, NftAttribute, NftDirectory, NftItem, SolNftMetaData } from '../shared/models/NFTModels';
 import { TitleCasePipe } from '@angular/common';
 import { MD5 } from 'crypto-es/lib/md5.js';
 import { SnackService } from '../core/services/snack/snack.service';
-import { create } from 'lodash';
+
 
 /*
 Spaghetti recipes from authentically Italian to quick and easy dinners.
@@ -195,9 +195,15 @@ export class HomeComponent implements OnInit {
     if (isInteractable) {
       this.layerRarityFormGroup.enable()
       this.itemRarityFolderRarityFormGroup.enable()
+      this.generationLimitControl.enable()
+      this.blockChain.enable()
+      this.NftBaseName.enable()
     } else {
       this.layerRarityFormGroup.disable()
       this.itemRarityFolderRarityFormGroup.disable()
+      this.generationLimitControl.disable()
+      this.blockChain.disable()
+      this.NftBaseName.disable()
     }
   }
 
