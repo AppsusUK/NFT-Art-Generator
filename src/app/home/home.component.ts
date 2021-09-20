@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit {
   itemRarityFolderRarityFormGroup: FormGroup;
   generationLimitControl: FormControl = new FormControl(5, [Validators.min(1)])
   blockChain: FormControl = new FormControl('ethereum', [Validators.required])
+  NftBaseName: FormControl = new FormControl('', [Validators.maxLength(100)])
   nftDirectory: NftDirectory;
   commonItemRarityFolders = [];
   currentNftImage = 1;
@@ -118,7 +119,6 @@ export class HomeComponent implements OnInit {
     this.commonItemRarityFolders.forEach(rarityFolder => {
       this.itemRarityFolderRarityFormGroup.addControl(rarityFolder, new FormControl(100/uniqueFolderNamesSet.size))
     });
-
     this.setNftFolderRarities();
     this.populateRandomImage();
   }
@@ -148,12 +148,12 @@ export class HomeComponent implements OnInit {
     }
     this.setNftFolderRarities();
     this.setNFTImageOutputFolders();
-
     if(!await this.enterImageCreationLoop()) {
       return;
     }
 
     this.snack.generalSnack(`Completed generating ${this.currentNftImage-1} images`, 'Ok')
+    this.currentNftImage = 1
     this.generating = false;
     this.setFormInteractability(true);
   }
@@ -326,8 +326,8 @@ export class HomeComponent implements OnInit {
     switch(this.blockChain.value){
       case 'ethereum': {
         metadata =  {
-          name: `${fileName}`,
-          description: `Image description ${fileName}`,
+          name: `${this.NftBaseName.value + fileName}`,
+          description: `Image description ${this.NftBaseName.value + fileName}`,
           image: "",
           attributes,
           hash: this.getNFTImageItemsHash(selectedNftFolderItems)
@@ -336,8 +336,8 @@ export class HomeComponent implements OnInit {
       }
       case 'solana': {
         metadata =  {
-          name: `${fileName}`,
-          description: `Image description ${fileName}`,
+          name: `${this.NftBaseName.value + fileName}`,
+          description: `Image description ${this.NftBaseName.value + fileName}`,
           image: "",
           attributes,
           properties: {
@@ -348,7 +348,7 @@ export class HomeComponent implements OnInit {
       }
     }
 
-    this.electron.fs.writeFileSync(`output/metadata/${metadata.name}.json`, JSON.stringify(metadata))
+    this.electron.fs.writeFileSync(`output/metadata/${fileName}.json`, JSON.stringify(metadata))
   }
 
 
@@ -367,7 +367,7 @@ export class HomeComponent implements OnInit {
         let roll = Math.random();
         raritySum += rarityFolder.rarity;
         if(roll <= raritySum) {
-          let randomItem = Array.from(rarityFolder.items.values())[Math.floor(Math.random()*rarityFolder.items.values.length)];
+          let randomItem = Array.from(rarityFolder.items.values())[Math.floor(Math.random()*rarityFolder.items.size)];
           if(randomItem) {
             selectedItems.push(randomItem)
           }
@@ -381,7 +381,7 @@ export class HomeComponent implements OnInit {
   selectLayers(): any {
     let roll = Math.random();
     let selectedLayers = [];
-
+    
     this.layers.forEach((layer) => {
       if (roll <= this.nftDirectory.layers.get(layer).rarity || this.nftDirectory.layers.get(layer).rarity === 1){
         selectedLayers.push(this.nftDirectory.layers.get(layer));

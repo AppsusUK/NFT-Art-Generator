@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen, Menu } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as url from 'url';
@@ -14,6 +14,9 @@ function createWindow(): BrowserWindow {
 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
+
+  // Disable menu
+  // Menu.setApplicationMenu(null)
 
   // Create the browser window.
   win = new BrowserWindow({

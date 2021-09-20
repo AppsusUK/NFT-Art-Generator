@@ -1,16 +1,26 @@
   <div style="padding: 64px 8vw" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="64px">
+
     <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="64px">
-      <div class="raised" style="padding: 16px; background-color: rgb(211, 211, 211); ">
+
+      <div class="raised" style="padding: 16px; background-color: white; ">
         <h3>Config</h3>
           <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px" style="">
 
-            <button mat-stroked-button (click)="loadNftFolderStructure()">Load NFTS</button>
+            <button mat-stroked-button (click)="loadNftFolderStructure()">Load Input Folder</button>
 
             <div style="font-size: 12px;">
               <mat-form-field appearance="fill">
                 <mat-label>Number of NFTs to generate</mat-label>
                 <input matInput placeholder="5" type="number" [formControl]="generationLimitControl" required>
                 <mat-error *ngIf="generationLimitControl.invalid">Enter valid number</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div style="font-size: 12px;">
+              <mat-form-field appearance="fill">
+                <mat-label>Art base name</mat-label>
+                <input matInput placeholder="Art 00" type="text" [formControl]="NftBaseName">
+                <mat-error *ngIf="NftBaseName.invalid">Enter valid name (max length 100)</mat-error>
               </mat-form-field>
             </div>
       
@@ -58,13 +68,22 @@
 
         <div [formGroup]="layerRarityFormGroup" *ngIf="layerRarityFormGroup" class="layer-weighting">
 
-          <h3 style="margin-top: 0px;">Layer order</h3>
+
+          <div fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="start center">
+
+            <strong style="padding-bottom: 1em; font-size: 1.17em;">Layer order</strong>
+  
+            <mat-icon style="font-size: 12px; cursor: default;" matTooltip='Give an order to your layers. "1" will be placed first and "5" will be last in the image.'>help_outline</mat-icon>
+            
+          </div>
+
+
 
           <div cdkDropList class="example-list" *ngIf="nftDirectory?.layers" fxLayout='column' fxLayoutGap='6px' (cdkDropListDropped)="drop($event)">
             <div *ngFor="let layer of layers;let i = index;" fxLayout='row' fxLayoutGap='12px' cdkDrag class="example-box" [cdkDragDisabled]="generating">
     
     
-              <span>{{i}}</span>
+              <span>{{i+1}}</span>
     
   
               <div style="font-size: 12px;">
@@ -88,16 +107,25 @@
       <div [formGroup]="itemRarityFolderRarityFormGroup" *ngIf="itemRarityFolderRarityFormGroup" class="layer-weighting">
 
 
-        <h3 style="margin-top: 0;">Rarity Probability</h3>
+        <!-- <h3 style="margin-top: 0;">Rarity Probability </h3> -->
 
-        <div *ngIf="commonItemRarityFolders" fxLayout='column' fxLayoutGap='24px' class="example-list" style="width: 212px;">
+        <div fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="start center">
+
+          <strong style="padding-bottom: 1em; font-size: 1.17em;">Rarity probability </strong>
+
+          <mat-icon style="font-size: 12px; cursor: default;" matTooltip="Rarity probabilities must add up to 100%">help_outline</mat-icon>
+
+        </div>
+        
+
+        <div *ngIf="commonItemRarityFolders" fxLayout='column' fxLayoutGap='24px' class="example-list" style="width: 164px;">
 
           <div  *ngFor="let rarityFolder of commonItemRarityFolders;" fxLayout='row' fxLayoutGap='12px' class="example-box" style="cursor: default;">
             <!-- <div>{{rarityFolder}}</div>
             <input type="number" name="layer-weighting" [formControlName]="rarityFolder" min="0" max="100">% -->
 
             <div style="font-size: 12px;">
-              <mat-form-field appearance="fill" >
+              <mat-form-field appearance="fill" [style.width.px]=150>
                 <mat-label>{{rarityFolder}}</mat-label>
                 <input matInput placeholder="5" type="number" [formControlName]="rarityFolder"  required min="0" max="100" (change)="setNftFolderRarities()">
   
@@ -106,11 +134,21 @@
 
           </div>
         </div>
+
       </div>
 
-      <div fxLayout="column" fxLayoutGap="32px" *ngIf="layerRarityFormGroup && itemRarityFolderRarityFormGroup">
+
+
+      <div fxLayout="column" fxLayoutGap="32px" *ngIf="layerRarityFormGroup && itemRarityFolderRarityFormGroup" style="max-width: 500px;">
+
+        <strong style="margin-top: 0; font-size: 1.17em;">Preview: {{NftBaseName.value}}{{currentNftImage}}</strong>
+
         <img [src]="randomImageUrl" style="background-color: white; height: 500px; width: 500px; border-radius: 15px;">
-        <button mat-raised-button (click)="populateRandomImage()">Random</button>
+
+
+        <button mat-raised-button color="accent" (click)="populateRandomImage()" [disabled]="generating" matTooltip="Generate a random preview image (does not save image).">Random</button>
       </div>
+
     </div>
+
   </div>
