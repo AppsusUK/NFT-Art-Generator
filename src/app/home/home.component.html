@@ -71,7 +71,7 @@
 
           <div fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="start center">
 
-            <strong style="padding-bottom: 1em; font-size: 1.17em;">Layer order</strong>
+            <strong style="padding-bottom: 1em; font-size: 1.17em;">Layer Order</strong>
   
             <mat-icon style="font-size: 12px; cursor: default;" matTooltip='Give an order to your layers. "1" will be placed first and "5" will be last in the image.'>help_outline</mat-icon>
             
@@ -88,9 +88,9 @@
   
               <div style="font-size: 12px;">
                 <mat-form-field appearance="fill" >
-                  <mat-label>{{layer}}</mat-label>
+                  <mat-label>{{layer.split('_').join(' ') | titlecase}}</mat-label>
                   <input matInput placeholder="5" type="number"  [formControlName]="layer"  required min="0" max="100" (change)="setNftFolderRarities()">
-  
+                  <span matSuffix>%</span>
                 </mat-form-field>
               </div>
     
@@ -111,7 +111,7 @@
 
         <div fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="start center">
 
-          <strong style="padding-bottom: 1em; font-size: 1.17em;">Rarity probability </strong>
+          <strong style="padding-bottom: 1em; font-size: 1.17em;">Rarity Percentage </strong>
 
           <mat-icon style="font-size: 12px; cursor: default;" matTooltip="Rarity probabilities must add up to 100%">help_outline</mat-icon>
 
@@ -126,9 +126,9 @@
 
             <div style="font-size: 12px;">
               <mat-form-field appearance="fill" [style.width.px]=150>
-                <mat-label>{{rarityFolder}}</mat-label>
+                <mat-label>{{rarityFolder.split('_').join(' ') | titlecase}}</mat-label>
                 <input matInput placeholder="5" type="number" [formControlName]="rarityFolder"  required min="0" max="100" (change)="setNftFolderRarities()">
-  
+                <span matSuffix>%</span>
               </mat-form-field>
             </div>
 
