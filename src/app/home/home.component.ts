@@ -117,7 +117,7 @@ export class HomeComponent implements OnInit {
 
     this.itemRarityFolderRarityFormGroup = new FormGroup({});
     this.commonItemRarityFolders.forEach(rarityFolder => {
-      this.itemRarityFolderRarityFormGroup.addControl(rarityFolder, new FormControl(100/uniqueFolderNamesSet.size))
+      this.itemRarityFolderRarityFormGroup.addControl(rarityFolder, new FormControl(parseInt((100/uniqueFolderNamesSet.size).toFixed(2))))
     });
     this.setNftFolderRarities();
     this.populateRandomImage();
@@ -363,8 +363,8 @@ export class HomeComponent implements OnInit {
     let selectedItems = [];
     selectedLayers.forEach(layer => {
       let raritySum = 0;
+      let roll = Math.random();
       for(let rarityFolder of Array.from(layer.itemRarityFolders.values())) {
-        let roll = Math.random();
         raritySum += rarityFolder.rarity;
         if(roll <= raritySum) {
           let randomItem = Array.from(rarityFolder.items.values())[Math.floor(Math.random()*rarityFolder.items.size)];
@@ -379,10 +379,10 @@ export class HomeComponent implements OnInit {
   }
 
   selectLayers(): any {
-    let roll = Math.random();
     let selectedLayers = [];
     
     this.layers.forEach((layer) => {
+      let roll = Math.random();
       if (roll <= this.nftDirectory.layers.get(layer).rarity || this.nftDirectory.layers.get(layer).rarity === 1){
         selectedLayers.push(this.nftDirectory.layers.get(layer));
       }
