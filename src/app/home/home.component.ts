@@ -216,15 +216,15 @@ export class HomeComponent implements OnInit {
   }
 
   setNFTImageOutputFolders() {
-    if(!this.electron.fs.existsSync("output/")){
-      this.electron.fs.mkdirSync("output/")
+    if(!this.electron.fs.existsSync(`${this.nftDirectory.path}/../output/`)){
+      this.electron.fs.mkdirSync(`${this.nftDirectory.path}/../output/`)
     }
-    if(!this.electron.fs.existsSync("output/images")){
-      this.electron.fs.mkdirSync("output/images")
+    if(!this.electron.fs.existsSync(`${this.nftDirectory.path}/../output/images`)){
+      this.electron.fs.mkdirSync(`${this.nftDirectory.path}/../output/images`)
     }
 
-    if(!this.electron.fs.existsSync("output/metadata")){
-      this.electron.fs.mkdirSync("output/metadata")
+    if(!this.electron.fs.existsSync(`${this.nftDirectory.path}/../output/metadata`)){
+      this.electron.fs.mkdirSync(`${this.nftDirectory.path}/../output/metadata`)
     }
   }
 
@@ -316,7 +316,7 @@ export class HomeComponent implements OnInit {
     this.randomImageUrl = img;
     const data = img.replace(/^data:image\/\w+;base64,/, "");
     const buf = Buffer.from(data, "base64");
-    this.electron.fs.writeFileSync(`output/images/${fileName}.png`, buf)
+    this.electron.fs.writeFileSync(`${this.nftDirectory.path}/../output/images/${fileName}.png`, buf)
   }
 
   createMetadataFile(selectedNftFolderItems: NftItem[], fileName: string){
@@ -354,7 +354,7 @@ export class HomeComponent implements OnInit {
       }
     }
 
-    this.electron.fs.writeFileSync(`output/metadata/${fileName}.json`, JSON.stringify(metadata))
+    this.electron.fs.writeFileSync(`${this.nftDirectory.path}/../output/metadata/${fileName}.json`, JSON.stringify(metadata))
   }
 
 
