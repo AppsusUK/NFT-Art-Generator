@@ -1,0 +1,70 @@
+.btn {    
+    background: linear-gradient(to right, #6fbbee 0%, #047ef0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-weight: 600;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font-size: 0.9rem;
+    margin: 0 auto;
+    outline: none;
+    position: relative;
+    z-index: 0;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+  }
+
+ button {
+     outline:none;
+     border: none;
+ }
+
+
+  
+  .btn::before {
+    content:"";
+    position:absolute;
+    z-index:-1;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    border-radius: 40px;
+    border: 2px solid transparent;
+    border-radius: 40px;
+    background: inherit;
+    background-origin:border-box;
+    background-clip:border-box;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite:destination-out;
+    mask-composite: exclude;
+    -webkit-mask-repeat:no-repeat;
+  }
+  /**/
+  .btn:hover:enabled {
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+  }
+
+  .btn:disabled {
+    color: gray;
+    border: 2px solid gray;
+    background: transparent;
+    -webkit-text-fill-color: gray;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+  }
+  
+  .btn:hover::before {
+    -webkit-mask:none;
+  }

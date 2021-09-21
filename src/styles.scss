@@ -31,11 +31,16 @@ $default-theme: mat-light-theme($default-primary, $default-accent, $default-warn
 // that you are using.
 @include angular-material-theme($default-theme);
 
+$darkest-blue: #1C1922;
+$whitish: #F0F0F0;
+$light-blue: #6fbbee;
+$main-blue: #047ef0;
+
 /* You can add global styles to this file, and also import other style files */
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #eeeeee;
+  background-color: $darkest-blue;;
   height: 100%;
   font-family: 'Noto Sans', sans-serif;
 }
@@ -45,3 +50,50 @@ html, body {
   box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
 
+.light-text{
+  color: $whitish;
+}
+
+// non focused label color
+.mat-form-field-label {
+
+  color: $whitish;
+ }
+
+// input color 
+input.mat-input-element {
+  color: $whitish;
+}
+
+/* Change label color on focused */
+.mat-form-field.mat-focused .mat-form-field-label {
+  color: $light-blue;
+}
+
+// hover underline color
+.mat-form-field-underline .mat-form-field-ripple{
+  background:linear-gradient(to right, $light-blue 0%, $main-blue 100%);
+}
+
+// focused underline color
+.mat-focused .mat-form-field-underline .mat-form-field-ripple{
+  background:linear-gradient(to right, $light-blue 0%, $main-blue 100%);
+}
+
+// focused placeholder color
+.mat-input-element::placeholder{
+  color: gray;
+}
+
+
+// MAT SELECT STYLE
+
+// selected text color
+.mat-form-field-type-mat-select .mat-form-field-label, .mat-select-value {
+  color: $whitish;
+}
+
+.mat-blueGrad {
+  background-color: $main-blue;
+  color: white;
+}

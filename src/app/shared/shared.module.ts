@@ -18,6 +18,8 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIconModule} from '@angular/material/icon';
+import { MainButtonComponent } from './components/main-button/main-button.component';
+import {MatRippleModule} from '@angular/material/core';
 
 const modules = [
   CommonModule,
@@ -33,14 +35,22 @@ const modules = [
   MatSelectModule,
   MatProgressBarModule,
   MatTooltipModule,
-  MatIconModule
+  MatIconModule,
+  MatRippleModule
+
+]
+
+const components = [
+  PageNotFoundComponent, 
+  WebviewDirective, 
+  MainButtonComponent
 ]
 
 
 @NgModule({
-  declarations: [PageNotFoundComponent, WebviewDirective],
+  declarations: [...components],
   imports: [...modules],
-  exports: [...modules],
+  exports: [...modules, ...components],
   providers: [TitleCasePipe]
 })
 export class SharedModule {}

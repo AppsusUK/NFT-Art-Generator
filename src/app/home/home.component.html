@@ -1,12 +1,22 @@
-  <div style="padding: 64px 8vw" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="64px">
+  <div style="padding: 64px 8vw" fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="64px">
 
     <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="64px">
 
-      <div class="raised" style="padding: 16px; background-color: white; ">
-        <h3>Config</h3>
+      <div class="raised config-container" fxLayout="column" fxLayoutGap="12px" fxLaoyoutAlign="start start">
+
+        <span class="light-text" style=" font-weight: 600; font-size: 16px;">Config</span>
+
           <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
 
-            <button mat-stroked-button (click)="loadNftFolderStructure()">Load Input Folder</button>
+            <!-- <button mat-stroked-button (click)="loadNftFolderStructure()">Load Input Folder</button> -->
+
+            <app-main-button 
+            buttonText="Select Input Folder" 
+            (customClick)="loadNftFolderStructure()" 
+            [disabled]="generating" 
+            matTooltip="Select input folder with image layer folders"
+            style="padding-bottom: 15px;"
+            ></app-main-button>
 
             <div style="font-size: 12px;">
               <mat-form-field appearance="fill">
@@ -32,16 +42,16 @@
                   <mat-option value="ethereum">Ethereum</mat-option>
                   <mat-option value="solana">Solana</mat-option>
                 </mat-select>
-                <mat-hint align="end">Used for metadata generation</mat-hint>
+                <mat-hint align="end" style="color:#adadad">Used for metadata generation</mat-hint>
               </mat-form-field>
             </div>
           </div>
       </div>
   
 
-      <div fxLayout="column" fxLayoutGap="12px">
-        <button mat-raised-button color="primary" [disabled]="layers.length <= 0 || layerRarityFormGroup?.invalid || itemRarityFolderRarityFormGroup?.invalid || generating" (click)="generateNfts()">Generate NFTS</button>
-        <button mat-raised-button color="primary" [disabled]="!generating" (click)="stopGeneration()">Stop</button>
+      <div fxLayout="column" fxLayoutGap="12px" style="height: 120px">
+        <button mat-raised-button color="blueGrad" [disabled]="layers.length <= 0 || layerRarityFormGroup?.invalid || itemRarityFolderRarityFormGroup?.invalid || generating" (click)="generateNfts()">Generate NFTS</button>
+        <button mat-raised-button color="warn" [disabled]="!generating" (click)="stopGeneration()">Stop</button>
 
         <mat-progress-bar
         *ngIf="generating"
@@ -50,7 +60,8 @@
         [value]="(currentNftImage/generationLimitControl.value)*100">
         </mat-progress-bar>
     
-        <span *ngIf="generating" >Current: {{currentNftImage}} out of {{generationLimitControl.value}}</span>
+        <span *ngIf="generating" class="light-text">Current: {{currentNftImage}} out of {{generationLimitControl.value}}</span>
+        
       </div>
     </div>
 
@@ -71,26 +82,26 @@
 
           <div fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="start center">
 
-            <strong style="padding-bottom: 1em; font-size: 1.17em;">Layer Order</strong>
+            <strong class="light-text" style="padding-bottom: 1em; font-size: 1.17em;">Layer Order</strong>
   
-            <mat-icon style="font-size: 12px; cursor: default;" matTooltip='Give an order to your layers. "1" will be placed first and "5" will be last in the image.'>help_outline</mat-icon>
+            <mat-icon  style="font-size: 12px; cursor: default; color: #adadad" matTooltip='Give an order to your layers. "1" will be placed first and "5" will be last in the image.'>help_outline</mat-icon>
             
           </div>
 
 
 
           <div cdkDropList class="example-list" *ngIf="nftDirectory?.layers" fxLayout='column' fxLayoutGap='6px' (cdkDropListDropped)="drop($event)">
-            <div *ngFor="let layer of layers;let i = index;" fxLayout='row' fxLayoutGap='12px' cdkDrag class="example-box" [cdkDragDisabled]="generating">
+            <div *ngFor="let layer of layers;let i = index;" fxLayout="row" fxLayoutGap='12px' fxLayoutAlign="space-between center" cdkDrag class="example-box" [cdkDragDisabled]="generating">
     
     
-              <span>{{i+1}}</span>
+              <span class="light-text" style="font-weight: 600; font-size: 1rem; padding-bottom: 15px;">{{i+1}}</span>
     
   
               <div style="font-size: 12px;">
-                <mat-form-field appearance="fill" >
+                <mat-form-field appearance="fill" [style.width.px]=150>
                   <mat-label>{{layer.split('_').join(' ') | titlecase}}</mat-label>
                   <input matInput placeholder="5" type="number"  [formControlName]="layer"  required min="0" max="100" (change)="setNftFolderRarities()">
-                  <span matSuffix>%</span>
+                  <span matSuffix class="light-text">%</span>
                 </mat-form-field>
               </div>
     
@@ -107,28 +118,26 @@
       <div [formGroup]="itemRarityFolderRarityFormGroup" *ngIf="itemRarityFolderRarityFormGroup" class="layer-weighting">
 
 
-        <!-- <h3 style="margin-top: 0;">Rarity Probability </h3> -->
 
         <div fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="start center">
 
-          <strong style="padding-bottom: 1em; font-size: 1.17em;">Rarity Percentage </strong>
+          <strong class="light-text" style="padding-bottom: 1em; font-size: 1.17em;">Rarity Percentage </strong>
 
-          <mat-icon style="font-size: 12px; cursor: default;" matTooltip="Rarity probabilities must add up to 100%">help_outline</mat-icon>
+          <mat-icon style="font-size: 12px; cursor: default; color:#adadad" matTooltip="Rarity probabilities must add up to 100%">help_outline</mat-icon>
 
         </div>
         
 
         <div *ngIf="commonItemRarityFolders" fxLayout='column' fxLayoutGap='24px' class="example-list" style="width: 164px;">
 
-          <div  *ngFor="let rarityFolder of commonItemRarityFolders;" fxLayout='row' fxLayoutGap='12px' class="example-box" style="cursor: default;">
-            <!-- <div>{{rarityFolder}}</div>
-            <input type="number" name="layer-weighting" [formControlName]="rarityFolder" min="0" max="100">% -->
+          <div  *ngFor="let rarityFolder of commonItemRarityFolders;" fxLayout="row" fxLayoutAlign="center center" fxLayoutGap='12px' class="example-box" style="cursor: default;">
+
 
             <div style="font-size: 12px;">
               <mat-form-field appearance="fill" [style.width.px]=150>
                 <mat-label>{{rarityFolder.split('_').join(' ') | titlecase}}</mat-label>
                 <input matInput placeholder="5" type="number" [formControlName]="rarityFolder"  required min="0" max="100" (change)="setNftFolderRarities()">
-                <span matSuffix>%</span>
+                <span matSuffix class="light-text">%</span>
               </mat-form-field>
             </div>
 
@@ -139,14 +148,21 @@
 
 
 
-      <div fxLayout="column" fxLayoutGap="32px" *ngIf="layerRarityFormGroup && itemRarityFolderRarityFormGroup" style="max-width: 500px;">
+      <div fxLayout="column" fxLayoutGap="32px"  *ngIf="layerRarityFormGroup && itemRarityFolderRarityFormGroup" style="max-width: 500px;">
 
-        <strong style="margin-top: 0; font-size: 1.17em;">Preview: {{NftBaseName.value}}{{currentNftImage}}</strong>
+        <strong class="light-text" style="margin-top: 0; font-size: 1.17em;">Preview: {{NftBaseName.value}}{{currentNftImage}}</strong>
 
-        <img [src]="randomImageUrl" style="background-color: white; height: 500px; width: 500px; border-radius: 15px;">
+        <img [src]="randomImageUrl" style="background-color: #1C1922; height: 500px; width: 500px; border-radius: 15px;">
+
+        <app-main-button 
+        buttonText="Random" 
+        (customClick)="populateRandomImage()" 
+        [disabled]="generating" 
+        matTooltip="Generate a random preview image (does not save image)"
+        ></app-main-button>
 
 
-        <button mat-raised-button color="accent" (click)="populateRandomImage()" [disabled]="generating" matTooltip="Generate a random preview image (does not save image).">Random</button>
+        <!-- <button mat-raised-button color="accent" (click)="populateRandomImage()" [disabled]="generating" matTooltip="Generate a random preview image (does not save image).">Random</button> -->
       </div>
 
     </div>
