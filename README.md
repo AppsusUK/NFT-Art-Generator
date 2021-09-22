@@ -31,6 +31,8 @@ Appsus NFT Art Generator is a free, open source application used to generate NFT
 12. ???
 13. Profit
 
+## How to video guide
+[![Video guide](https://img.youtube.com/vi/mXuUX2EQlJQ/0.jpg)](https://www.youtube.com/watch?v=mXuUX2EQlJQ)
 
 ## Concepts
 ### Layer
