@@ -115,4 +115,40 @@ Images need to have the same width and height, so that the position of the image
 ##  FAQ's
 Ask away
 
+## For Developers
+
+### Introduction
+This is an ![Angular 12](https://angularjs.org/) application using ![Electron 13](https://www.electronjs.org/), with ![this project](https://github.com/maximegris/angular-electron) as a base.
+
+### Requirements
+* NodeJs - v14.17.1 (the lowest version we've used and verified, lower versions may or may not work)
+
+### Getting Started
+
+Clone this repository locally:
+
+> git clone https://github.com/AppsusUK/NFT-Art-Generator.git
+
+Install dependencies with npm (used by Electron renderer process):
+> cd NFT-Art-Generator/
+> 
+> npm install
+
+There is an issue with yarn and node_modules when the application is built by the packager. Please use npm as dependencies manager.
+
+If you want to generate Angular components with Angular-cli , you MUST install @angular/cli in npm global context. Please follow Angular-cli documentation if you had installed a previous version of angular-cli.
+
+> npm install -g @angular/cli
+
+Install NodeJS dependencies with npm (used by Electron main process):
+
+> cd app/
+> 
+> npm install
+
+### Creating a build
+To create the build/executable, install the above dependencies, then navigate to the main directory and run:
+
+> npm run electron:build
+
 
