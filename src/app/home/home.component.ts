@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
   layers: string[] = [];
   generating = false;
   randomImageUrl: string;
-  constructor(private router: Router, private electron: ElectronService, private titlecasePipe: TitleCasePipe, private snack: SnackService, private ref: ChangeDetectorRef) { 
+  constructor(private router: Router, private electron: ElectronService, private titlecasePipe: TitleCasePipe, private snack: SnackService, private ref: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -100,7 +100,7 @@ export class HomeComponent implements OnInit {
     //TODO extract to function + throw error
     let bigRarityArray: string[][] = []
     let uniqueFolderNamesSet = new Set;
-  
+
     this.nftDirectory.layers.forEach((layer) => {
       bigRarityArray.push(Array.from(layer.itemRarityFolders.keys()))
       layer.itemRarityFolders.forEach((rarityFolder) => {
@@ -126,7 +126,7 @@ export class HomeComponent implements OnInit {
   selectInputFolder(): boolean {
     let selectedDirectory = this.electron.remote.dialog.showOpenDialogSync({
       properties: ["openDirectory"]
-    });    
+    });
 
     if (selectedDirectory) {
       this.nftDirectory = {
@@ -141,7 +141,7 @@ export class HomeComponent implements OnInit {
   stopGeneration() {
     this.generating = false;
   }
-  
+
   async generateNfts() {
     if(!this.validateNftFolderRarities()){
       return;
@@ -189,7 +189,7 @@ export class HomeComponent implements OnInit {
     return true;
   }
 
-  
+
 
   setFormInteractability(isInteractable: boolean) {
     if (isInteractable) {
@@ -240,11 +240,16 @@ export class HomeComponent implements OnInit {
   getMaxImageCombinations() {
     let itemsInLayers = [];
     this.nftDirectory.layers.forEach((layer) => {
-      let itemsInLayer = 0;
-      layer.itemRarityFolders.forEach((rarityFolder) => {
-        itemsInLayer += rarityFolder.items.size;
-      })
-      itemsInLayers.push(itemsInLayer);
+      if (layer.rarity > 0) {
+        // If the layer isn't guaranteed to be picked, no item being picked it also a valid combination (empty layer is an additional state)
+        let itemsInLayer = layer.rarity == 1 ? 0 : 1;
+        layer.itemRarityFolders.forEach((rarityFolder) => {
+          if (rarityFolder.rarity > 0) {
+            itemsInLayer += rarityFolder.items.size;
+          }
+        })
+        itemsInLayers.push(itemsInLayer);
+      }
     })
     return itemsInLayers.reduce((total, num) => total * num);
   }
@@ -281,11 +286,11 @@ export class HomeComponent implements OnInit {
     const image = this.electron.fs.readFileSync(selectedNftItems[0].path)
     var blob = new Blob([image], {type: 'image/png'});
     var url = URL.createObjectURL(blob);
-    
+
     const im2g = await loadImage(url);
     const canvas = createCanvas(im2g.width, im2g.height);
     const ctx = canvas.getContext('2d');
-    
+
     for (let i=0; i<selectedNftItems.length; i++) {
       const image = this.electron.fs.readFileSync(selectedNftItems[i].path)
       var blob = new Blob([image], {type: 'image/png'});
@@ -364,7 +369,7 @@ export class HomeComponent implements OnInit {
       let selectedLayers = this.selectLayers();
       return this.selectNftFolderItems(selectedLayers);
   }
-  
+
   selectNftFolderItems(selectedLayers: Layer[]): NftItem[] {
     let selectedItems = [];
     selectedLayers.forEach(layer => {
@@ -386,7 +391,7 @@ export class HomeComponent implements OnInit {
 
   selectLayers(): any {
     let selectedLayers = [];
-    
+
     this.layers.forEach((layer) => {
       let roll = Math.random();
       if (roll <= this.nftDirectory.layers.get(layer).rarity || this.nftDirectory.layers.get(layer).rarity === 1){

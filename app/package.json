@@ -4,6 +4,7 @@
   "main": "main.js",
   "private": true,
   "dependencies": {
-    "@electron/remote": "1.2.0"
+    "@electron/remote": "1.2.0",
+    "electron": "13.1.7"
   }
 }
