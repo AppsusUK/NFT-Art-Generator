@@ -1,0 +1,93 @@
+name: Build/release
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  Make_GitHub_Release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.step_version.outputs.version }}
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Read package.json
+        uses: tyankatsu0105/read-package-version-actions@v1
+        id: package_version
+
+      - name: Create Release
+        id: create_release
+        run: |
+          gh release create "${{ env.VERSION }}" -n "${{ env.MESSAGE }}" -t "${{ env.NAME }}" -p
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: "v${{ steps.package_version.outputs.version }}"
+          MESSAGE: "Release v${{ steps.package_version.outputs.version }}"
+          NAME: "Release v${{ steps.package_version.outputs.version }}"
+
+      - id: step_version
+        run: echo "::set-output name=version::${{ steps.package_version.outputs.version }}"
+
+  release:
+    needs: Make_GitHub_Release
+    name: Build And Upload Release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: "appsus-nft-art-generator-${{ needs.Make_GitHub_Release.outputs.version }}.AppImage"
+            asset_name: "appsus-nft-art-generator-${{ needs.Make_GitHub_Release.outputs.version }}.AppImage"
+            asset_content_type: application/zip
+          - os: windows-latest
+            # by electron-builder  |
+            artifact_name: "appsus-nft-art-generator ${{ needs.Make_GitHub_Release.outputs.version }}.exe"
+            asset_name: "appsus-nft-art-generator ${{ needs.Make_GitHub_Release.outputs.version }}.exe"
+            asset_content_type: application/exe
+          - os: macos-latest
+            artifact_name: "appsus-nft-art-generator-${{ needs.Make_GitHub_Release.outputs.version }}.dmg"
+            asset_name: "appsus-nft-art-generator-${{ needs.Make_GitHub_Release.outputs.version }}.dmg"
+            asset_content_type: application/x-apple-diskimage
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Read package.json
+        uses: tyankatsu0105/read-package-version-actions@v1
+        id: package_version
+
+      - name: Context
+        env:
+          RUNNER_CONTEXT: ${{ toJson( needs.Make_GitHub_Release ) }}
+        run: |
+          echo "$RUNNER_CONTEXT"
+          echo "Version is ${{ needs.Make_GitHub_Release.outputs.version }}"
+      - run: npm install
+      - run: npm run postinstall
+      - run: npm run electron:build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Asset
+        id: upload_release_asset
+        run: |
+          gh release upload "v${{ steps.package_version.outputs.version }}" "${{ env.FILES }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILES: "./release/${{ matrix.artifact_name }}"
+          NODE_OPTIONS: "--max-old-space-size=4096"
