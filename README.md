@@ -9,11 +9,11 @@ Appsus NFT Art Generator is a free, open source application used to generate NFT
 
 ## Downloads
 
-[Windows](https://github.com/AppsusUK/NFT-Art-Generator/releases/download/v0.0.3/Appsus.NFT.Art.Generator.exe)
+[Windows](https://github.com/AppsusUK/NFT-Art-Generator/releases/download/v0.0.4/appsus-nft-art-generator.0.0.4.exe)
 
-[Mac](https://github.com/AppsusUK/NFT-Art-Generator/releases/download/v0.0.3/Appsus.NFT.Art.Generator.dmg)
+[Mac](https://github.com/AppsusUK/NFT-Art-Generator/releases/download/v0.0.4/appsus-nft-art-generator-0.0.4.dmg)
 
-[Linux](https://github.com/AppsusUK/NFT-Art-Generator/releases/download/v0.0.3/Appsus.NFT.Art.Generator.AppImage)
+[Linux](https://github.com/AppsusUK/NFT-Art-Generator/releases/download/v0.0.4/appsus-nft-art-generator-0.0.4.AppImage)
 
 ## Usage Quick Start
 
