@@ -1,0 +1,30 @@
+
+
+<div class="container" fxLayout="column" fxLayoutAlign="space-between center" 
+style="height:100%; background-color: #0c0b0f;" 
+[ngStyle]="{'width': isExpanded ? '250px' : '50px', 'min-width': isExpanded ? '250px' : '50px'}">
+
+<div fxLayout="column" style="width: 100%;">
+
+    <div fxLayout="row" fxlayoutAlign="start center" fxLayoutGap="12px" style="padding:16px; user-select: none;">
+        <img src="/assets/icons/logo.svg" height="18px">
+        <span style="font-size: 14px; color:white; font-weight: 900; min-width: 250px;" *ngIf="isExpanded;">Appsus NFT Art Generator</span>
+    </div>
+
+    
+    <div style="height:1px; width:100%; background: linear-gradient(to right, #6fbbee 0%, #047ef0 100%);"></div>
+
+
+
+    <ng-content></ng-content>
+
+
+</div>
+  
+    <div fxLayout="row" style="width: 100%; padding: 8px" fxLayoutAlign="end center">
+        <button mat-icon-button (click)="toggleClicked()" title="Toggle sidenav">
+            <mat-icon [ngClass]="isExpanded ?  'rotate-icon' : 'normal-icon' ">chevron_right</mat-icon>
+        </button>
+    </div>
+
+  </div>

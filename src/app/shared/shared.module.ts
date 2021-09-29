@@ -20,6 +20,9 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatIconModule} from '@angular/material/icon';
 import { MainButtonComponent } from './components/main-button/main-button.component';
 import {MatRippleModule} from '@angular/material/core';
+import {MatTreeModule} from '@angular/material/tree';
+import { SideNavComponent } from './components/side-nav/side-nav.component';
+
 
 const modules = [
   CommonModule,
@@ -36,14 +39,15 @@ const modules = [
   MatProgressBarModule,
   MatTooltipModule,
   MatIconModule,
-  MatRippleModule
-
+  MatRippleModule,
+  MatTreeModule
 ]
 
 const components = [
   PageNotFoundComponent, 
   WebviewDirective, 
-  MainButtonComponent
+  MainButtonComponent,
+  SideNavComponent
 ]
 
 

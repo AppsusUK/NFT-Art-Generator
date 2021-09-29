@@ -10,7 +10,6 @@ import { TitleCasePipe } from '@angular/common';
 import { MD5 } from 'crypto-es/lib/md5.js';
 import { SnackService } from '../core/services/snack/snack.service';
 
-
 /*
 Spaghetti recipes from authentically Italian to quick and easy dinners.
 
@@ -25,7 +24,7 @@ Although artisanal brands may be made by hand using traditional methods, commerc
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
-
+  isNavExpanded: boolean = false;
   layerRarityFormGroup: FormGroup;
   itemRarityFolderRarityFormGroup: FormGroup;
   generationLimitControl: FormControl = new FormControl(5, [Validators.min(1)])
@@ -37,17 +36,19 @@ export class HomeComponent implements OnInit {
   layers: string[] = [];
   generating = false;
   randomImageUrl: string;
+
   constructor(private router: Router, private electron: ElectronService, private titlecasePipe: TitleCasePipe, private snack: SnackService, private ref: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-    console.log('HomeComponent INIT');
+
   }
 
   loadNftFolderStructure(): void {
     if(this.nftDirectory){
       this.nftDirectory = null
       this.layers = []
+      this.ref.detectChanges()
     }
     if(!this.selectInputFolder()) {
       return;
@@ -405,4 +406,14 @@ export class HomeComponent implements OnInit {
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.layers, event.previousIndex, event.currentIndex);
   }
+
+
+  toggleNav(){
+    this.isNavExpanded = !this.isNavExpanded
+  }
+
+  externalToggleNav(event){
+    this.isNavExpanded = event
+  }
+
 }

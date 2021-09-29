@@ -47,3 +47,9 @@ export interface NftAttribute {
   trait_type: string;
   value: string | number;
 }
+
+
+export interface FolderNode {
+  name: string;
+  children?: FolderNode[];
+}

@@ -1,0 +1,27 @@
+<mat-tree [dataSource]="data" [treeControl]="treeControl" class="example-tree">
+    <!-- This is the tree node template for leaf nodes -->
+    <!-- There is inline padding applied to this node using styles.
+      This padding value depends on the mat-icon-button width. -->
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle style="color: #f0f0f0;  font-size: 12px;" class="truncate" [title]="node.name">
+        {{node.name}}
+    </mat-tree-node>
+    <!-- This is the tree node template for expandable nodes -->
+    <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+        <div class="mat-tree-node" style="color: #f0f0f0; font-size: 12px; width: 150px;"  [title]="node.name">
+          <button mat-icon-button matTreeNodeToggle
+                  [attr.aria-label]="'Toggle ' + node.name">
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          <span class="truncate" style="width: 70px;">{{node.name}}</span>
+          <span style="background-color: #00000090; padding: 6px; border-radius: 25%; user-select: none;" title="Total folders/files inside">{{node.children.length}}</span> 
+        </div>
+        <!-- There is inline padding applied to this div using styles.
+            This padding value depends on the mat-icon-button width.  -->
+        <div [class.example-tree-invisible]="!treeControl.isExpanded(node)"
+            role="group">
+          <ng-container matTreeNodeOutlet></ng-container>
+      </div>
+    </mat-nested-tree-node>
+  </mat-tree>

@@ -1,4 +1,23 @@
-  <div style="padding: 64px 8vw" fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="64px">
+<div fxLayout="row wrap" fxLayouAlign="space-between center" fxLayoutGap="32px" style="height: 100vh; width: 100%;">
+
+
+
+  <app-side-nav [isExpanded]="isNavExpanded" (onToggleClick)="externalToggleNav($event)">
+
+    <div fxLayout="row" class="light-text" style="margin: 6px 0 0 6px;min-width:250px;" fxLayoutGap="12px" fxLayoutAlign="start center">
+      <button mat-icon-button (click)="toggleNav()" title="Toggle file explorer"><mat-icon >folder</mat-icon></button>
+      <span *ngIf="isNavExpanded" style="font-size: 14px; font-weight: 600; user-select: none;">File Explorer</span>
+    </div>
+
+
+      <app-file-viewer  *ngIf="isNavExpanded && nftDirectory;" [nftDirectory]="nftDirectory">
+        
+      </app-file-viewer>
+
+  </app-side-nav>
+
+
+  <div  style="padding: 64px 32px;" fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="64px">
 
     <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="64px">
 
@@ -57,7 +76,7 @@
         *ngIf="generating"
         color="primary"
         mode="determinate"
-        [value]="(currentNftImage/generationLimitControl.value)*100">
+        [value]="100">
         </mat-progress-bar>
     
         <span *ngIf="generating" class="light-text">Current: {{currentNftImage}} out of {{generationLimitControl.value}}</span>
@@ -168,3 +187,6 @@
     </div>
 
   </div>
+
+
+</div>
