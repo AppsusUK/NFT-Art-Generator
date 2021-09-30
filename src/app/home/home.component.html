@@ -2,22 +2,23 @@
 
 
 
-  <app-side-nav [isExpanded]="isNavExpanded" (onToggleClick)="externalToggleNav($event)">
-
-    <div fxLayout="row" class="light-text" style="margin: 6px 0 0 6px;min-width:250px;" fxLayoutGap="12px" fxLayoutAlign="start center">
-      <button mat-icon-button (click)="toggleNav()" title="Toggle file explorer"><mat-icon >folder</mat-icon></button>
-      <span *ngIf="isNavExpanded" style="font-size: 14px; font-weight: 600; user-select: none;">File Explorer</span>
-    </div>
-
-
-      <app-file-viewer  *ngIf="isNavExpanded && nftDirectory;" [nftDirectory]="nftDirectory">
-        
-      </app-file-viewer>
-
+  <app-side-nav
+  [isExpanded]="isNavExpanded" 
+  (onToggleClick)="externalToggleNav($event)" 
+  [nftDirectory]="nftDirectory"
+  [blockChain]="blockChain"
+  [nftBaseName]="NftBaseName"
+  [nftDescription]="nftDescription"
+  [creatorAddress]="creatorAddress"
+  [royaltiesFee]="royaltiesFee"
+  [collectionName]="collectionName"
+  [solanaSymbol]="solanaSymbol"
+  >
+    
   </app-side-nav>
 
 
-  <div  style="padding: 64px 32px;" fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="64px">
+  <div  style="padding: 64px 32px;" fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="64px">
 
     <div fxLayout="row" fxLayoutAlign="start start" fxLayoutGap="64px">
 
@@ -27,7 +28,6 @@
 
           <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
 
-            <!-- <button mat-stroked-button (click)="loadNftFolderStructure()">Load Input Folder</button> -->
 
             <app-main-button 
             buttonText="Select Input Folder" 
@@ -44,11 +44,11 @@
                 <mat-error *ngIf="generationLimitControl.invalid">Enter valid number</mat-error>
               </mat-form-field>
             </div>
-
+<!-- 
             <div style="font-size: 12px;">
               <mat-form-field appearance="fill">
                 <mat-label>Art base name</mat-label>
-                <input matInput placeholder="Art 00" type="text" [formControl]="NftBaseName">
+                <input matInput placeholder="Art #" type="text" [formControl]="NftBaseName">
                 <mat-error *ngIf="NftBaseName.invalid">Enter valid name (max length 100)</mat-error>
               </mat-form-field>
             </div>
@@ -63,7 +63,8 @@
                 </mat-select>
                 <mat-hint align="end" style="color:#adadad">Used for metadata generation</mat-hint>
               </mat-form-field>
-            </div>
+            </div> -->
+
           </div>
       </div>
   

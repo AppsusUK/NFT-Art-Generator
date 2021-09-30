@@ -1,6 +1,7 @@
 .container {
     transition: all 0.2s ease-in-out;
     max-height: 100vh;
+    height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -12,7 +13,16 @@
 }
 
 .rotate-icon {
+    transition: all 0.2s ease-in-out;
     transform: rotate(180deg);
     color:#f0f0f0;
 }
+
+
+
+.expanded-container{
+    transition: height 0.2s ease-in-out;
+    overflow: hidden;
+}
+
 

@@ -1,0 +1,18 @@
+$darkest-blue: #1C1922;
+$whitish: #F0F0F0;
+$light-blue: #6fbbee;
+$main-blue: #047ef0;
+
+.container{
+    margin: 0 16px;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+    background-color: rgba(255, 255, 255, 0.062);
+    border-radius: 5px;
+  }
+
+//input outline color
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: rgba(0, 0, 0, 0.678);
+}

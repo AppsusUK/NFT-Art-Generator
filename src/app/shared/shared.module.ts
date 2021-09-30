@@ -22,6 +22,9 @@ import { MainButtonComponent } from './components/main-button/main-button.compon
 import {MatRippleModule} from '@angular/material/core';
 import {MatTreeModule} from '@angular/material/tree';
 import { SideNavComponent } from './components/side-nav/side-nav.component';
+import { FileViewerComponent } from './components/file-viewer/file-viewer.component';
+import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
+import { TwoDigitDecimalNumberDirective } from './directives/two-digit-decimal-number/two-digit-decimal-number.directive';
 
 
 const modules = [
@@ -47,7 +50,10 @@ const components = [
   PageNotFoundComponent, 
   WebviewDirective, 
   MainButtonComponent,
-  SideNavComponent
+  SideNavComponent,
+  FileViewerComponent,
+  MetadataEditorComponent,
+  TwoDigitDecimalNumberDirective
 ]
 
 

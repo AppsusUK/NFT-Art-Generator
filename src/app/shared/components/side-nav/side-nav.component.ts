@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { NftDirectory } from '../../models/NFTModels';
 
 @Component({
   selector: 'app-side-nav',
@@ -7,14 +9,30 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class SideNavComponent implements OnInit {
   @Input() isExpanded: any = false;
-  @Output() onToggleClick = new EventEmitter();
+  @Output() onToggleClick = new EventEmitter()
+  @Input() nftDirectory: NftDirectory;
+  @Input() blockChain: FormControl
+  @Input() nftBaseName: FormControl
+  @Input() nftDescription: FormControl
+  @Input() creatorAddress: FormControl
+  @Input() royaltiesFee: FormControl
+  @Input() collectionName: FormControl
+  @Input() solanaSymbol: FormControl
+
+  expandedFiles: boolean = true
+  expandedMetadata: boolean = true
+
   constructor() { }
 
   ngOnInit(): void {
   }
 
-  toggleNav(){
+  toggleFiles(){
+    this.expandedFiles = !this.expandedFiles
+  }
 
+  toggleMetadata(){
+    this.expandedMetadata = !this.expandedMetadata
   }
 
   toggleClicked() {

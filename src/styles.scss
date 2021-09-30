@@ -65,6 +65,10 @@ input.mat-input-element {
   color: $whitish;
 }
 
+textarea.mat-input-element {
+  color: $whitish;
+}
+
 /* Change label color on focused */
 .mat-form-field.mat-focused .mat-form-field-label {
   color: $light-blue;
@@ -77,7 +81,7 @@ input.mat-input-element {
 
 // focused underline color
 .mat-focused .mat-form-field-underline .mat-form-field-ripple{
-  background:linear-gradient(to right, $light-blue 0%, $main-blue 100%);
+  background: linear-gradient(to right, $light-blue 0%, $main-blue 100%);
 }
 
 // focused placeholder color
