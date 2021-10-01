@@ -41,6 +41,7 @@ export class HomeComponent implements OnInit {
   layers: string[] = [];
   generating = false;
   randomImageUrl: string;
+  allMetadata = [];
 
   constructor(private router: Router, private electron: ElectronService, private titlecasePipe: TitleCasePipe, private snack: SnackService, private ref: ChangeDetectorRef) {
   }
@@ -162,6 +163,8 @@ export class HomeComponent implements OnInit {
     this.currentNftImage = 1
     this.generating = false;
     this.setFormInteractability(true);
+
+    this.electron.fs.writeFileSync(`${this.nftDirectory.path}/../output/artwork.json`, JSON.stringify(this.allMetadata));
   }
 
   async enterImageCreationLoop(): Promise<boolean> {
@@ -391,6 +394,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.electron.fs.writeFileSync(`${this.nftDirectory.path}/../output/metadata/${fileName}.json`, JSON.stringify(metadata))
+    this.allMetadata.push(metadata);
   }
 
 
