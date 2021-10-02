@@ -67,6 +67,7 @@ export class MetadataEditorComponent implements OnInit {
       this.electron.fs.writeFileSync(`${selectedDirectory[0]}/cardano-metadata.json`, JSON.stringify(data))
     }
 
+    this.snack.generalSnack("Metadata updated successfully", "Ok")
 
   }
 
