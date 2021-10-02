@@ -18,9 +18,12 @@ export class SideNavComponent implements OnInit {
   @Input() royaltiesFee: FormControl
   @Input() collectionName: FormControl
   @Input() solanaSymbol: FormControl
+  @Input() cardanoPolicyId: FormControl
+  @Input() baseImageAddress: FormControl
 
   expandedFiles: boolean = true
   expandedMetadata: boolean = true
+
 
   constructor() { }
 
@@ -38,7 +41,5 @@ export class SideNavComponent implements OnInit {
   toggleClicked() {
     this.onToggleClick.emit(!this.isExpanded);
   }
-
-
 
 }

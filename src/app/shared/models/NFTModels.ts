@@ -55,6 +55,28 @@ export interface SolNftMetaData {
   }
 }
 
+export interface CardanoMetadata {
+  "721": {
+    [policyId:string]: {
+
+    }
+  }
+}
+
+export interface CardanoNFTData {
+  [assetName: string]: {
+    id: number;
+    name: string;
+    image: string;
+    description: string;
+    properties: CardanoProperties;
+  }
+}
+
+export interface CardanoProperties {
+  [key:string]: string | number;
+}
+
 export interface NftAttribute {
   trait_type: string;
   value: string | number;

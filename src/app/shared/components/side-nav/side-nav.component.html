@@ -2,7 +2,7 @@
 
 <div class="container" fxLayout="column" fxLayoutAlign="space-between center" 
 style="height:100%; background-color: #0c0b0f;" 
-[ngStyle]="{'width': isExpanded ? '250px' : '50px', 'min-width': isExpanded ? '250px' : '50px'}">
+[ngStyle]="{'width': isExpanded ? '280px' : '50px', 'min-width': isExpanded ? '280px' : '50px'}">
 
 <div fxLayout="column" style="width: 100%; ">
 
@@ -58,6 +58,9 @@ style="height:100%; background-color: #0c0b0f;"
       [royaltiesFee]="royaltiesFee"
       [collectionName]="collectionName"
       [solanaSymbol]="solanaSymbol"
+      [cardanoPolicyId]="cardanoPolicyId"
+      [baseImageAddress]="baseImageAddress"
+      [nftDirectory]="nftDirectory"
       ></app-metadata-editor>
 
 

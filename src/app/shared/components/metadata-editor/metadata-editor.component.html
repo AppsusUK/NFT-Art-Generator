@@ -6,6 +6,7 @@
           <mat-select [formControl]="blockChain">
             <mat-option value="ethereum">Ethereum</mat-option>
             <mat-option value="solana">Solana</mat-option>
+            <mat-option value="cardano">Cardano</mat-option>
           </mat-select>
           <mat-hint align="end" style="color:#adadad">Used for metadata generation</mat-hint>
         </mat-form-field>
@@ -34,7 +35,7 @@
       </div>
 
 
-      <div style="font-size: 12px;" matTooltip="Used for setting where royalties are paid to">
+      <div style="font-size: 12px;" *ngIf="blockChain.value !== 'cardano'" matTooltip="Used for setting where royalties are paid to">
         <mat-form-field appearance="outline">
           <mat-label>Creator wallet address</mat-label>
           <input matInput placeholder="0x0000000000000000000000000000000000000000" maxlength="50" type="text" [formControl]="creatorAddress" >
@@ -43,7 +44,7 @@
       </div>
 
 
-      <div style="font-size: 12px;" matTooltip="Set royalties percentage">
+      <div style="font-size: 12px;" *ngIf="blockChain.value !== 'cardano'" matTooltip="Set royalties percentage">
         <mat-form-field appearance="outline">
           <mat-label>Royalties fee</mat-label>
           <input matInput placeholder="25" min="0" max="100" step="0.01" 
@@ -73,7 +74,25 @@
         </mat-form-field>
       </div>
 
+      <div *ngIf="blockChain.value === 'cardano'" style="font-size: 12px;" matTooltip="Used for setting where royalties are paid to">
+        <mat-form-field appearance="outline">
+          <mat-label>PolicyID</mat-label>
+          <input matInput type="text" [formControl]="cardanoPolicyId" >
+        </mat-form-field>
+      </div>
 
+      <hr style="width: 100%; border-color: #ffffff40;">
+
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <div style="font-size: 12px; margin-top: 18px;" matTooltip='Update metadata "image" property *must have generated metadata already'>
+          <mat-form-field appearance="outline">
+            <mat-label>Base image address</mat-label>
+            <input matInput type="text" placeholder="ipfs://QmTX1SQBBk1sHqNbMsNNYC1cmUzixFgGqX3FuJKoNBbffv" [formControl]="baseImageAddress" >
+          </mat-form-field>
+        </div>
+        <button mat-icon-button (click)="updateImageMetadata()" ><mat-icon style="color: #f0f0f0" matTooltip="Select metadata foler and update metadata">add</mat-icon></button>
+      </div>
+      
       
 
 
