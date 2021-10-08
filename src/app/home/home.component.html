@@ -3,8 +3,8 @@
 
 
   <app-side-nav
-  [isExpanded]="isNavExpanded" 
-  (onToggleClick)="externalToggleNav($event)" 
+  [isExpanded]="isNavExpanded"
+  (onToggleClick)="externalToggleNav($event)"
   [nftDirectory]="nftDirectory"
   [blockChain]="blockChain"
   [nftBaseName]="NftBaseName"
@@ -16,7 +16,7 @@
   [cardanoPolicyId]="cardanoPolicyId"
   [baseImageAddress]="baseImageAddress"
   >
-    
+
   </app-side-nav>
 
 
@@ -31,10 +31,10 @@
           <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="16px">
 
 
-            <app-main-button 
-            buttonText="Select Input Folder" 
-            (customClick)="loadNftFolderStructure()" 
-            [disabled]="generating" 
+            <app-main-button
+            buttonText="Select Input Folder"
+            (customClick)="loadNftFolderStructure()"
+            [disabled]="generating"
             matTooltip="Select input folder with image layer folders"
             style="padding-bottom: 15px;"
             ></app-main-button>
@@ -46,7 +46,7 @@
                 <mat-error *ngIf="generationLimitControl.invalid">Enter valid number</mat-error>
               </mat-form-field>
             </div>
-<!-- 
+<!--
             <div style="font-size: 12px;">
               <mat-form-field appearance="fill">
                 <mat-label>Art base name</mat-label>
@@ -54,14 +54,15 @@
                 <mat-error *ngIf="NftBaseName.invalid">Enter valid name (max length 100)</mat-error>
               </mat-form-field>
             </div>
-      
-      
+
+
             <div style="font-size: 12px;">
               <mat-form-field appearance="fill">
                 <mat-label>Blockchain</mat-label>
                 <mat-select [formControl]="blockChain">
                   <mat-option value="ethereum">Ethereum</mat-option>
                   <mat-option value="solana">Solana</mat-option>
+                  <mat-option value="solana-metaplex">Solana Metaplex</mat-option>
                 </mat-select>
                 <mat-hint align="end" style="color:#adadad">Used for metadata generation</mat-hint>
               </mat-form-field>
@@ -69,7 +70,7 @@
 
           </div>
       </div>
-  
+
 
       <div fxLayout="column" fxLayoutGap="12px" style="height: 120px">
         <button mat-raised-button color="blueGrad" [disabled]="layers.length <= 0 || layerRarityFormGroup?.invalid || itemRarityFolderRarityFormGroup?.invalid || generating" (click)="generateNfts()">Generate NFTS</button>
@@ -81,16 +82,16 @@
         mode="determinate"
         [value]="100">
         </mat-progress-bar>
-    
+
         <span *ngIf="generating" class="light-text">Current: {{currentNftImage}} out of {{generationLimitControl.value}}</span>
-        
+
       </div>
     </div>
 
 
 
-    
-    
+
+
 
     <div fxLayout="row flex" fxLayoutAlign="start start" fxLayoutGap="64px">
 
@@ -105,20 +106,20 @@
           <div fxLayout="row" fxLayoutGap="12px" fxLayoutAlign="start center">
 
             <strong class="light-text" style="padding-bottom: 1em; font-size: 1.17em;">Layer Order</strong>
-  
+
             <mat-icon  style="font-size: 12px; cursor: default; color: #adadad" matTooltip='Give an order to your layers. "1" will be placed first and "5" will be last in the image.'>help_outline</mat-icon>
-            
+
           </div>
 
 
 
           <div cdkDropList class="example-list" *ngIf="nftDirectory?.layers" fxLayout='column' fxLayoutGap='6px' (cdkDropListDropped)="drop($event)">
             <div *ngFor="let layer of layers;let i = index;" fxLayout="row" fxLayoutGap='12px' fxLayoutAlign="space-between center" cdkDrag class="example-box" [cdkDragDisabled]="generating">
-    
-    
+
+
               <span class="light-text" style="font-weight: 600; font-size: 1rem; padding-bottom: 15px;">{{i+1}}</span>
-    
-  
+
+
               <div style="font-size: 12px;">
                 <mat-form-field appearance="fill" [style.width.px]=150>
                   <mat-label>{{layer.split('_').join(' ') | titlecase}}</mat-label>
@@ -126,17 +127,17 @@
                   <span matSuffix class="light-text">%</span>
                 </mat-form-field>
               </div>
-    
-  
+
+
             </div>
           </div>
         </div>
 
- 
-      
-    
-    
-    
+
+
+
+
+
       <div [formGroup]="itemRarityFolderRarityFormGroup" *ngIf="itemRarityFolderRarityFormGroup" class="layer-weighting">
 
 
@@ -148,7 +149,7 @@
           <mat-icon style="font-size: 12px; cursor: default; color:#adadad" matTooltip="Rarity probabilities must add up to 100%">help_outline</mat-icon>
 
         </div>
-        
+
 
         <div *ngIf="commonItemRarityFolders" fxLayout='column' fxLayoutGap='24px' class="example-list" style="width: 164px;">
 
@@ -176,10 +177,10 @@
 
         <img [src]="randomImageUrl" style="background-color: #1C1922; height: 500px; width: 500px; border-radius: 15px;">
 
-        <app-main-button 
-        buttonText="Random" 
-        (customClick)="populateRandomImage()" 
-        [disabled]="generating" 
+        <app-main-button
+        buttonText="Random"
+        (customClick)="populateRandomImage()"
+        [disabled]="generating"
         matTooltip="Generate a random preview image (does not save image)"
         ></app-main-button>
 
