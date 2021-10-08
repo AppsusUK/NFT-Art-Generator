@@ -4,7 +4,7 @@ export interface NftItem  {
     path: string;
     layerName: string;
   }
-  
+
 export interface ItemRarityFolder  {
 name: string;
 rarity?: number;
@@ -48,6 +48,24 @@ export interface SolNftMetaData {
   attributes: NftAttribute[],
   properties: {
     hash: string;
+  };
+  collection: {
+    name: string;
+    family: string;
+  }
+}
+
+export interface SolMetaplexNftMetaData {
+  name: string;
+  symbol: string;
+  description: string;
+  seller_fee_basis_points: number,
+  image: string;
+  category: string;
+  external_url: string,
+  attributes: NftAttribute[],
+  properties: {
+    creators: SolCreator[]
   };
   collection: {
     name: string;

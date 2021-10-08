@@ -5,7 +5,19 @@ import { Router } from '@angular/router';
 import { ElectronService } from '../core/services/electron/electron.service';
 import * as _ from "lodash";
 import { Canvas, createCanvas, loadImage } from 'canvas';
-import { CardanoMetadata, CardanoNFTData, CardanoProperties, EthNftMetaData, ItemRarityFolder, Layer, NftAttribute, NftDirectory, NftItem, SolNftMetaData } from '../shared/models/NFTModels';
+import {
+  CardanoMetadata,
+  CardanoNFTData,
+  CardanoProperties,
+  EthNftMetaData,
+  ItemRarityFolder,
+  Layer,
+  NftAttribute,
+  NftDirectory,
+  NftItem,
+  SolMetaplexNftMetaData,
+  SolNftMetaData
+} from '../shared/models/NFTModels';
 import { TitleCasePipe } from '@angular/common';
 import { MD5 } from 'crypto-es/lib/md5.js';
 import { SnackService } from '../core/services/snack/snack.service';
@@ -376,7 +388,7 @@ export class HomeComponent implements OnInit {
     }
 
 
-    let metadata: EthNftMetaData | SolNftMetaData | CardanoNFTData;
+    let metadata: EthNftMetaData | SolNftMetaData | CardanoNFTData | SolMetaplexNftMetaData;
     const description = this.nftDescription.value.replaceAll('{name}', `${this.NftBaseName.value + fileName}`)
     switch(this.blockChain.value){
       case 'ethereum': {
@@ -414,6 +426,31 @@ export class HomeComponent implements OnInit {
           },
           properties: {
             hash: this.getNFTImageItemsHash(selectedNftFolderItems)
+          }
+        }
+        break;
+      }
+      case 'solana-metaplex': {
+        metadata =  {
+          name: `${this.NftBaseName.value + fileName}`,
+          symbol: this.solanaSymbol.value,
+          description,
+          seller_fee_basis_points: parseFloat(this.royaltiesFee.value)*100,
+          image: `${fileName}.png`,
+          category: "image",
+          external_url: "",
+          attributes,
+          collection: {
+            name: this.collectionName.value,
+            family: "Appsus NFT Art Generator",
+          },
+          properties: {
+            creators: [
+              {
+                address: this.creatorAddress.value,
+                share: 100
+              }
+            ],
           }
         }
         break;
