@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormArray, FormControl } from '@angular/forms';
 import { NftDirectory } from '../../models/NFTModels';
 
 @Component({
@@ -14,7 +14,7 @@ export class SideNavComponent implements OnInit {
   @Input() blockChain: FormControl
   @Input() nftBaseName: FormControl
   @Input() nftDescription: FormControl
-  @Input() creatorAddress: FormControl
+  @Input() creatorAddress: FormArray
   @Input() royaltiesFee: FormControl
   @Input() collectionName: FormControl
   @Input() solanaSymbol: FormControl

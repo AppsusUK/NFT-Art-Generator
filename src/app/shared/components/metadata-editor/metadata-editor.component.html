@@ -35,13 +35,15 @@
         </mat-form-field>
       </div>
 
-
-      <div style="font-size: 12px;" *ngIf="blockChain.value !== 'cardano'" matTooltip="Used for setting where royalties are paid to">
-        <mat-form-field appearance="outline">
-          <mat-label>Creator wallet address</mat-label>
-          <input matInput placeholder="0x0000000000000000000000000000000000000000" maxlength="50" type="text" [formControl]="creatorAddress" >
-          <mat-error *ngIf="creatorAddress.invalid">Enter valid address (max length 50)</mat-error>
-        </mat-form-field>
+      <div fxLayout="row" fxLayoutAlign="start" *ngFor="let address of creatorAddress.controls; index as i">
+        <div style="font-size: 12px;" *ngIf="blockChain.value !== 'cardano'" matTooltip="Used for setting where royalties are paid to">
+          <mat-form-field appearance="outline">
+            <mat-label>Creator wallet address</mat-label>
+            <input matInput placeholder="0x0000000000000000000000000000000000000000" maxlength="50" type="text" [formControl]="address" >
+            <mat-error *ngIf="creatorAddress.invalid">Enter valid address (max length 50)</mat-error>
+          </mat-form-field>
+        </div>
+        <button *ngIf="i === 0" mat-icon-button (click)="addCreatorAddress()" style="padding: .25rem 0;"><mat-icon style="color: #f0f0f0;" matTooltip="Add another new wallet address">add</mat-icon></button>
       </div>
 
 

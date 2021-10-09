@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormArray, FormControl, Validators } from '@angular/forms';
 import { ElectronService } from '../../../core/services/electron/electron.service';
 import { SnackService } from '../../../core/services/snack/snack.service';
 import { EthNftMetaData, NftDirectory, SolNftMetaData } from '../../models/NFTModels';
@@ -14,7 +14,7 @@ export class MetadataEditorComponent implements OnInit {
   @Input() blockChain: FormControl
   @Input() nftBaseName: FormControl
   @Input() nftDescription: FormControl
-  @Input() creatorAddress: FormControl
+  @Input() creatorAddress: FormArray
   @Input() royaltiesFee: FormControl
   @Input() collectionName: FormControl
   @Input() solanaSymbol: FormControl
@@ -69,6 +69,10 @@ export class MetadataEditorComponent implements OnInit {
 
     this.snack.generalSnack("Metadata updated successfully", "Ok")
 
+  }
+
+  addCreatorAddress(){
+    this.creatorAddress.push(new FormControl('', [Validators.maxLength(50)]));
   }
 
 }
