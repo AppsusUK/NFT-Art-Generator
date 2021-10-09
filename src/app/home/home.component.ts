@@ -204,7 +204,11 @@ export class HomeComponent implements OnInit {
     this.setFormInteractability(false);
 
     //TODO fix UI hang when main thread intensively in this loop - delegate to web worker
-    this.currentNftImage = 1
+    if (this.blockChain.value === 'solana-metaplex') {
+      this.currentNftImage = 0;
+    } else {
+      this.currentNftImage = 1;
+    }
     this.generating = true;
     let createdImageHashesSet = new Set<string>();
     while(this.currentNftImage <= this.generationLimitControl.value && this.generating) {
